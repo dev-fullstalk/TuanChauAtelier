@@ -1,0 +1,1194 @@
+/* ==========================================================================
+   TUAN CHAU ATELIER - GLOBAL JAVASCRIPT
+   Logic for Components Loader, Theme Switcher, Filter, Lightbox, Modals, Forms
+   ========================================================================== */
+
+document.addEventListener('DOMContentLoaded', () => {
+  // 0. Splash Screen Intro Handler
+  const introScreen = document.getElementById('intro-screen');
+  const skipIntroBtn = document.getElementById('skip-intro');
+  
+  if (introScreen) {
+    const hasIntroPlayed = sessionStorage.getItem('intro-played') === 'true';
+    
+    if (hasIntroPlayed) {
+      introScreen.remove();
+      document.body.style.overflow = '';
+    } else {
+      document.body.style.overflow = 'hidden';
+      
+      const dismissIntro = () => {
+        introScreen.classList.add('fade-out');
+        document.body.style.overflow = '';
+        sessionStorage.setItem('intro-played', 'true');
+        setTimeout(() => {
+          introScreen.remove();
+        }, 800);
+      };
+      
+      // Auto close after 2.5 seconds (2500ms)
+      const autoCloseTimeout = setTimeout(dismissIntro, 2500);
+      
+      if (skipIntroBtn) {
+        skipIntroBtn.addEventListener('click', () => {
+          clearTimeout(autoCloseTimeout);
+          dismissIntro();
+        });
+      }
+    }
+  }
+
+  // 1. Dynamic Component Loader
+  const isLocalFile = window.location.protocol === 'file:';
+  
+  if (!isLocalFile) {
+    // If running on a server (localhost/live), load components dynamically
+    const loadComponents = async () => {
+      try {
+        const [headerRes, footerRes, appIntroRes] = await Promise.all([
+          fetch('components/header.html'),
+          fetch('components/footer.html'),
+          fetch('components/app-intro.html')
+        ]);
+
+        if (headerRes.ok) {
+          document.querySelector('header').innerHTML = await headerRes.text();
+        }
+        if (footerRes.ok) {
+          document.querySelector('footer').innerHTML = await footerRes.text();
+        }
+        if (appIntroRes.ok) {
+          document.getElementById('app-intro').innerHTML = await appIntroRes.text();
+        }
+      } catch (err) {
+        console.warn('Component dynamic fetch failed. Falling back to inline static templates:', err);
+      } finally {
+        // Initialize all interactive events after HTML insertion
+        initializeInteractions();
+      }
+    };
+    loadComponents();
+  } else {
+    // If running via double-click file://, use inline template markup and initialize immediately
+    initializeInteractions();
+  }
+});
+
+function initializeInteractions() {
+  // Bind all interactive elements
+  initThemeToggle();
+  initMobileMenu();
+  initHeaderScroll();
+  initProductFilter();
+  initLightbox();
+  initQuoteModal();
+  initNewsletterForm();
+  initScrollAnimations();
+  initConsultationMultiStep(); // Initialize Multi-Step Consultation Form
+  fetchProductsAndInit(); // Tải dữ liệu sản phẩm động từ Supabase
+  
+  // Custom Hook for App intro interactions since it's loaded
+  if (window.initAppIntroSimulator) {
+    window.initAppIntroSimulator();
+  }
+}
+
+// 2. Dark/Light Theme Toggle
+function initThemeToggle() {
+  const themeBtn = document.getElementById('themeToggleBtn');
+  if (!themeBtn) return;
+
+  // Read saved theme from localStorage
+  const currentTheme = localStorage.getItem('color-scheme') || 'light';
+  
+  // Apply initial theme
+  document.documentElement.setAttribute('data-theme', currentTheme);
+  updateMetaColorScheme(currentTheme);
+
+  // Toggle theme click event
+  themeBtn.addEventListener('click', () => {
+    const activeTheme = document.documentElement.getAttribute('data-theme');
+    const newTheme = activeTheme === 'dark' ? 'light' : 'dark';
+    
+    document.documentElement.setAttribute('data-theme', newTheme);
+    localStorage.setItem('color-scheme', newTheme);
+    updateMetaColorScheme(newTheme);
+  });
+  
+  // Track OS scheme change dynamically
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (!localStorage.getItem('color-scheme')) {
+      const systemTheme = e.matches ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', systemTheme);
+      updateMetaColorScheme(systemTheme);
+    }
+  });
+}
+
+function updateMetaColorScheme(theme) {
+  const meta = document.querySelector('meta[name="color-scheme"]');
+  if (meta) {
+    meta.content = theme === 'dark' ? 'dark' : 'light';
+  }
+}
+
+// 3. Mobile Menu Toggle
+function initMobileMenu() {
+  const toggleBtn = document.getElementById('mobileMenuToggle');
+  const navMenu = document.getElementById('navMenu');
+  if (!toggleBtn || !navMenu) return;
+
+  toggleBtn.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+    toggleBtn.classList.toggle('active');
+  });
+
+  // Close menu when clicking nav link
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      navMenu.classList.remove('active');
+      toggleBtn.classList.remove('active');
+    });
+  });
+}
+
+// 4. Header Scroll styling
+function initHeaderScroll() {
+  const header = document.querySelector('header.site-header');
+  if (!header) return;
+
+  const handleScroll = () => {
+    if (window.scrollY > 50) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  };
+
+  window.addEventListener('scroll', handleScroll);
+  handleScroll(); // Trigger immediately to catch refreshed scroll offset
+}
+
+// 5. Product Filter System
+function initProductFilter() {
+  const filterBtns = document.querySelectorAll('.filter-btn');
+  const productCards = document.querySelectorAll('.product-card');
+  if (filterBtns.length === 0 || productCards.length === 0) return;
+
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      // Remove active from other buttons
+      filterBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+
+      const filterValue = btn.getAttribute('data-filter');
+
+      productCards.forEach(card => {
+        const category = card.getAttribute('data-category');
+        
+        if (filterValue === 'all' || category === filterValue) {
+          card.style.display = 'block';
+          // Smooth fade in
+          card.style.opacity = '0';
+          setTimeout(() => {
+            card.style.opacity = '1';
+            card.style.transform = 'translateY(0)';
+          }, 50);
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+  });
+}
+
+// 6. Lightbox Preview Modal
+function initLightbox() {
+  const lightbox = document.getElementById('lightboxModal');
+  const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
+  const lightboxTitle = lightbox ? lightbox.querySelector('.lightbox-title') : null;
+  const viewBtns = document.querySelectorAll('.btn-view-texture');
+  const closeBtn = lightbox ? lightbox.querySelector('.lightbox-close') : null;
+
+  if (!lightbox || !lightboxImg || viewBtns.length === 0) return;
+
+  viewBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card = btn.closest('.product-card');
+      const img = card.querySelector('.product-img');
+      const title = card.querySelector('.product-title');
+
+      if (img) {
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt || '';
+      }
+      if (title && lightboxTitle) {
+        lightboxTitle.textContent = title.textContent;
+      }
+
+      lightbox.classList.add('active');
+      document.body.style.overflow = 'hidden'; // Lock background scroll
+    });
+  });
+
+  const closeLightbox = () => {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+  lightbox.addEventListener('click', (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+
+  // ESC Key listener to dismiss
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
+      closeLightbox();
+    }
+  });
+}
+
+// 7. Interactive Quote Request Modal
+function initQuoteModal() {
+  const modal = document.getElementById('quoteModal');
+  const modalClose = modal ? modal.querySelector('.modal-close') : null;
+  const quoteBtns = document.querySelectorAll('.btn-quote, .btn-hero-cta, .btn-nav-cta');
+  const quoteForm = document.getElementById('quoteRequestForm');
+
+  if (!modal || quoteBtns.length === 0) return;
+
+  quoteBtns.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      // Prevent anchor jump if href is contact
+      if (btn.classList.contains('btn-quote') || btn.classList.contains('btn-hero-cta') || btn.classList.contains('btn-nav-cta')) {
+        // Open Modal
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+
+        // Prepopulate select option based on product card context if triggered from a card
+        const card = btn.closest('.product-card');
+        const selectElement = document.getElementById('quoteStoneType');
+        
+        if (card && selectElement) {
+          const title = card.querySelector('.product-title').textContent.trim();
+          // Find option matching title
+          for (let option of selectElement.options) {
+            if (title.toLowerCase().includes(option.text.toLowerCase()) || option.text.toLowerCase().includes(title.toLowerCase())) {
+              selectElement.value = option.value;
+              break;
+            }
+          }
+        }
+        e.preventDefault();
+      }
+    });
+  });
+
+  const closeModal = () => {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  if (modalClose) modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
+
+  // Handle Form Submit
+  if (quoteForm) {
+    quoteForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      // Simulate form submission
+      const name = document.getElementById('quoteName').value;
+      const phone = document.getElementById('quotePhone').value;
+      
+      showToast(`Cảm ơn anh/chị ${name}. Tuan Chau Atelier đã nhận được yêu cầu tư vấn. Chúng tôi sẽ gọi lại cho anh/chị qua số ${phone} trong 15 phút.`);
+      quoteForm.reset();
+      closeModal();
+    });
+  }
+}
+
+// 8. Newsletter Form Submit
+function initNewsletterForm() {
+  const form = document.getElementById('newsletterForm');
+  if (!form) return;
+
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const emailInput = form.querySelector('.newsletter-input');
+    showToast(`Đăng ký bản tin thành công! Chúng tôi đã gửi thông tin ưu đãi đến địa chỉ: ${emailInput.value}`);
+    form.reset();
+  });
+}
+
+// Toast notification helper
+function showToast(message) {
+  // Create toast container if not exists
+  let toastContainer = document.getElementById('toastContainer');
+  if (!toastContainer) {
+    toastContainer = document.createElement('div');
+    toastContainer.id = 'toastContainer';
+    toastContainer.style.cssText = `
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 9999;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-width: 380px;
+    `;
+    document.body.appendChild(toastContainer);
+  }
+
+  // Create individual toast
+  const toast = document.createElement('div');
+  toast.style.cssText = `
+    background-color: var(--bg-secondary);
+    color: var(--text-primary);
+    border-left: 4px solid var(--accent-gold);
+    padding: 16px 20px;
+    border-radius: 8px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    font-family: var(--font-sans);
+    font-size: 0.9rem;
+    line-height: 1.4;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    border: 1px solid var(--border-color);
+  `;
+  toast.textContent = message;
+  toastContainer.appendChild(toast);
+
+  // Trigger entering transition
+  setTimeout(() => {
+    toast.style.opacity = '1';
+    toast.style.transform = 'translateY(0)';
+  }, 50);
+
+  // Auto remove after 5s
+  setTimeout(() => {
+    toast.style.opacity = '0';
+    toast.style.transform = 'translateY(-20px)';
+    setTimeout(() => {
+      toast.remove();
+    }, 450);
+  }, 5000);
+}
+
+// 9. IntersectionObserver Fallback for Scroll Reveal Animations
+function initScrollAnimations() {
+  // Check if standard CSS ViewTimeline is supported
+  const hasCSSScrollTimeline = CSS.supports('(animation-timeline: view()) and (animation-range: entry)');
+  
+  const revealElements = document.querySelectorAll('.reveal-scroll');
+  
+  if (!hasCSSScrollTimeline) {
+    // If browser doesn't support scroll-driven animations natively, use JS fallback
+    const observerOptions = {
+      root: null,
+      rootMargin: '0px',
+      threshold: 0.15
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('fade-in-visible');
+          // Optional: Stop observing once revealed
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    revealElements.forEach(el => {
+      el.classList.add('fade-in-ready');
+      observer.observe(el);
+    });
+  } else {
+    // Natively handled by CSS. Make sure we clean classes in case
+    revealElements.forEach(el => {
+      el.style.opacity = '';
+      el.style.transform = '';
+    });
+  }
+}
+
+/* ==========================================================================
+   10. MULTI-STEP CONSULTATION FORM LOGIC (Supabase & Telegram Integration)
+   ========================================================================== */
+
+// Đọc cấu hình từ file config.js (window.APP_CONFIG) hoặc fallback về mặc định
+const APP_CONFIG = window.APP_CONFIG || {};
+
+const SUPABASE_CONFIG = {
+  url: APP_CONFIG.SUPABASE_URL || 'YOUR_SUPABASE_URL',
+  anonKey: APP_CONFIG.SUPABASE_ANON_KEY || 'sb_publishable_yerpn5Zyx1PUBRggKUDWFQ_bEz8MF_F'
+};
+
+const TELEGRAM_CONFIG = {
+  botToken: APP_CONFIG.TELEGRAM_BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN',
+  chatId: APP_CONFIG.TELEGRAM_CHAT_ID || 'YOUR_TELEGRAM_CHAT_ID'
+};
+
+// Danh sách dữ liệu mẫu đá theo không gian (Step 1 -> Step 2)
+const STONE_DATABASE = {
+  "Kitchen": [
+    { name: "Đá Quartz Trắng Vân Calacatta", code: "QZ-801", thumb: "assets/images/stone_carrara.jpg" },
+    { name: "Đá Granite Nero Marquina Gold", code: "GR-202", thumb: "assets/images/stone_nero.jpg" },
+    { name: "Đá Thạch Anh Nhân Tạo Xám Nhẹ", code: "QZ-105", thumb: "assets/images/stone_terrazzo.jpg" }
+  ],
+  "Bathroom": [
+    { name: "Đá Marble Trắng Carrara Ý", code: "MB-101", thumb: "assets/images/stone_carrara.jpg" },
+    { name: "Đá Granite Đen Nero Marquina", code: "GR-202", thumb: "assets/images/stone_nero.jpg" },
+    { name: "Đá Marble Vân Mây Thượng Hạng", code: "MB-104", thumb: "assets/images/stone_terrazzo.jpg" }
+  ],
+  "Living Room & Translucent Stone": [
+    { name: "Tranh đá Onyx Xuyên Sáng Gold", code: "OX-301", thumb: "assets/images/stone_terrazzo.jpg" },
+    { name: "Tranh đá Onyx Ngọc Xanh Xuyên Sáng", code: "OX-302", thumb: "assets/images/stone_carrara.jpg" },
+    { name: "Đá Marble Calacatta Gold Vương Giả", code: "MB-102", thumb: "assets/images/stone_nero.jpg" }
+  ],
+  "Stairs & Exterior": [
+    { name: "Đá Granite Đen Kim Sa Trung", code: "GR-201", thumb: "assets/images/stone_nero.jpg" },
+    { name: "Đá Granite Vàng Solarius Brazil", code: "GR-205", thumb: "assets/images/stone_terrazzo.jpg" },
+    { name: "Đá Granite Đỏ Bình Định", code: "GR-207", thumb: "assets/images/stone_carrara.jpg" }
+  ],
+  "Full House": [
+    { name: "Đá Marble Trắng Carrara Ý", code: "MB-101", thumb: "assets/images/stone_carrara.jpg" },
+    { name: "Đá Granite Nero Marquina Gold", code: "GR-202", thumb: "assets/images/stone_nero.jpg" },
+    { name: "Tranh đá Onyx Xuyên Sáng Gold", code: "OX-301", thumb: "assets/images/stone_terrazzo.jpg" },
+    { name: "Đá Quartz Trắng Vân Calacatta", code: "QZ-801", thumb: "assets/images/stone_carrara.jpg" }
+  ]
+};
+
+function initConsultationMultiStep() {
+  const modal = document.getElementById('consultationModal');
+  const closeBtn = document.getElementById('closeConsultationModal');
+  const openBtns = document.querySelectorAll('.btn-open-consultation');
+  const floatingBtn = document.getElementById('floatingCtaBtn');
+  
+  if (!modal) return;
+
+  // Form State
+  let currentStep = 1;
+  const formData = {
+    room_region: '',
+    selected_stones: [],
+    need_sample_visit: false,
+    service_needed: 'Cử thợ đến đo đạc & khảo sát trực tiếp',
+    customer_name: '',
+    phone_number: '',
+    address: '',
+    customer_note: ''
+  };
+
+  // 1. Handle Floating Button Visibility on Scroll
+  const handleScrollVisibility = () => {
+    if (floatingBtn) {
+      if (window.scrollY > 300) {
+        floatingBtn.classList.add('visible');
+      } else {
+        floatingBtn.classList.remove('visible');
+      }
+    }
+  };
+  window.addEventListener('scroll', handleScrollVisibility);
+  handleScrollVisibility(); // Check immediately
+
+  // 2. Open Modal Events
+  const openModal = () => {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    resetForm();
+    goToStep(1);
+  };
+
+  openBtns.forEach(btn => btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    openModal();
+  }));
+  
+  if (floatingBtn) {
+    floatingBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      openModal();
+    });
+  }
+
+  // 3. Close Modal Events
+  const closeModal = () => {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
+
+  // 4. Reset Form to initial state
+  const resetForm = () => {
+    currentStep = 1;
+    formData.room_region = '';
+    formData.selected_stones = [];
+    formData.need_sample_visit = false;
+    formData.service_needed = 'Cử thợ đến đo đạc & khảo sát trực tiếp';
+    formData.customer_name = '';
+    formData.phone_number = '';
+    formData.address = '';
+    formData.customer_note = '';
+
+    // UI resets
+    document.getElementById('multiStepConsultationForm').reset();
+    document.getElementById('multiStepConsultationForm').style.display = 'block';
+    document.getElementById('consultationSuccess').style.display = 'none';
+    
+    // Step cards reset
+    document.querySelectorAll('.region-card').forEach(c => c.classList.remove('selected'));
+    document.getElementById('btnNext1').disabled = true;
+
+    document.getElementById('stoneCustomOption').classList.remove('selected');
+    
+    // Service cards select first card by default
+    document.querySelectorAll('.service-card').forEach((c, idx) => {
+      if (idx === 0) c.classList.add('selected');
+      else c.classList.remove('selected');
+    });
+
+    // Hide error
+    document.getElementById('phoneError').style.display = 'none';
+  };
+
+  // 5. Navigate to specific Step
+  const goToStep = (step) => {
+    if (step < 1 || step > 4) return;
+    currentStep = step;
+
+    // Hide all step contents
+    document.querySelectorAll('.step-content').forEach(content => {
+      content.classList.remove('active');
+    });
+
+    // Show current step content
+    document.getElementById(`step${step}`).classList.add('active');
+
+    // Update Progress Bar
+    const progressFill = document.getElementById('progressBarFill');
+    if (progressFill) {
+      progressFill.style.width = `${(step / 4) * 100}%`;
+    }
+
+    // Update Step Indicators
+    document.querySelectorAll('.progress-step').forEach(indicator => {
+      const stepNum = parseInt(indicator.getAttribute('data-step'));
+      indicator.classList.remove('active', 'completed');
+      
+      if (stepNum === currentStep) {
+        indicator.classList.add('active');
+      } else if (stepNum < currentStep) {
+        indicator.classList.add('completed');
+      }
+    });
+  };
+
+  // 6. Step Navigation Button Bindings
+  document.querySelectorAll('.btn-prev').forEach(btn => {
+    btn.addEventListener('click', () => {
+      goToStep(currentStep - 1);
+    });
+  });
+
+  // Step 1: Click Region Card
+  const regionCards = document.querySelectorAll('.region-card');
+  const btnNext1 = document.getElementById('btnNext1');
+
+  regionCards.forEach(card => {
+    card.addEventListener('click', () => {
+      regionCards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      
+      formData.room_region = card.getAttribute('data-region');
+      btnNext1.disabled = false;
+
+      // Dynamic load stones for Step 2
+      renderStonesForRegion(formData.room_region);
+
+      // Auto advance to Step 2 for high engagement UX
+      setTimeout(() => {
+        if (currentStep === 1) goToStep(2);
+      }, 400);
+    });
+  });
+
+  if (btnNext1) {
+    btnNext1.addEventListener('click', () => goToStep(2));
+  }
+
+  // Lọc mẫu đá thông minh từ database dựa trên không gian được chọn ở Step 1
+  const getStonesForRegion = (region) => {
+    const allProducts = window.allProducts || [];
+    if (allProducts.length === 0) {
+      return STONE_DATABASE[region] || [];
+    }
+
+    let filtered = [];
+    const regLower = region.toLowerCase();
+    
+    if (regLower.includes('kitchen')) {
+      // Bếp: Lấy đá granite, quartz, porcelain hoặc tên có chứa chữ bếp, đảo
+      filtered = allProducts.filter(p => {
+        const type = (p.stone_type || '').toLowerCase();
+        const name = (p.name || '').toLowerCase();
+        return type === 'granite' || type === 'quartz' || type === 'porcelain' || name.includes('bếp') || name.includes('đảo');
+      });
+    } else if (regLower.includes('bathroom')) {
+      // Tắm: Lấy đá marble, granite, quartz hoặc tên có chứa tắm, lavabo
+      filtered = allProducts.filter(p => {
+        const type = (p.stone_type || '').toLowerCase();
+        const name = (p.name || '').toLowerCase();
+        return type === 'marble' || type === 'granite' || type === 'quartz' || name.includes('tắm') || name.includes('lavabo');
+      });
+    } else if (regLower.includes('living room')) {
+      // Phòng khách/Tranh đá: Lấy đá xuyên sáng onyx (is_translucent === true) hoặc tên chứa tranh, onyx, xuyên sáng
+      filtered = allProducts.filter(p => {
+        const type = (p.stone_type || '').toLowerCase();
+        const name = (p.name || '').toLowerCase();
+        return p.is_translucent === true || type === 'onyx' || name.includes('onyx') || name.includes('tranh') || name.includes('xuyên sáng') || name.includes('vách') || name.includes('khách');
+      });
+    } else if (regLower.includes('stairs')) {
+      // Cầu thang/Mặt tiền: Lấy đá có độ cứng cao như granite hoặc tên chứa cầu thang, mặt tiền, tam cấp
+      filtered = allProducts.filter(p => {
+        const type = (p.stone_type || '').toLowerCase();
+        const name = (p.name || '').toLowerCase();
+        return type === 'granite' || name.includes('cầu thang') || name.includes('mặt tiền') || name.includes('tam cấp') || name.includes('ngoại thất');
+      });
+    } else {
+      // Toàn bộ căn nhà: Lấy toàn bộ sản phẩm
+      filtered = allProducts;
+    }
+
+    // Ánh xạ sang cấu trúc hiển thị của mẫu đá
+    const result = filtered.map(p => ({
+      name: p.name,
+      code: p.stone_type ? p.stone_type.toUpperCase() + '-' + p.id.toString().substring(0, 3).toUpperCase() : 'STONE-01',
+      thumb: p.thumbnail_url || 'assets/images/stone_carrara.jpg'
+    }));
+
+    // Nếu lọc ra trống, fallback về danh sách tĩnh mặc định
+    return result.length > 0 ? result : (STONE_DATABASE[region] || []);
+  };
+
+  // Step 2: Render & Handle Stone Choices
+  const renderStonesForRegion = (region) => {
+    const grid = document.getElementById('dynamicStoneGrid');
+    if (!grid) return;
+
+    grid.innerHTML = '';
+    const stones = getStonesForRegion(region);
+
+    stones.forEach(stone => {
+      const card = document.createElement('div');
+      card.className = 'stone-card';
+      card.setAttribute('data-stone-name', stone.name);
+      
+      // Check if already selected
+      const isSelected = formData.selected_stones.includes(stone.name);
+      if (isSelected) card.classList.add('selected');
+
+      card.innerHTML = `
+        <div class="stone-thumb-wrapper">
+          <img src="${stone.thumb}" alt="${stone.name}" class="stone-thumb">
+        </div>
+        <div class="stone-info">
+          <h4 class="stone-name">${stone.name}</h4>
+          <span class="stone-code">Mã: ${stone.code}</span>
+        </div>
+        <div class="stone-checkbox">✓</div>
+      `;
+
+      card.addEventListener('click', () => {
+        card.classList.toggle('selected');
+        const stoneName = stone.name;
+
+        if (card.classList.contains('selected')) {
+          if (!formData.selected_stones.includes(stoneName)) {
+            formData.selected_stones.push(stoneName);
+          }
+        } else {
+          formData.selected_stones = formData.selected_stones.filter(name => name !== stoneName);
+        }
+      });
+
+      grid.appendChild(card);
+    });
+  };
+
+  // Custom Step 2 option checkbox
+  const customOption = document.getElementById('stoneCustomOption');
+  if (customOption) {
+    customOption.addEventListener('click', () => {
+      customOption.classList.toggle('selected');
+      formData.need_sample_visit = customOption.classList.contains('selected');
+    });
+  }
+
+  const btnNext2 = document.getElementById('btnNext2');
+  if (btnNext2) {
+    btnNext2.addEventListener('click', () => {
+      goToStep(3);
+    });
+  }
+
+  // Step 3: Handle Service Select
+  const serviceCards = document.querySelectorAll('.service-card');
+  serviceCards.forEach(card => {
+    card.addEventListener('click', () => {
+      serviceCards.forEach(c => c.classList.remove('selected'));
+      card.classList.add('selected');
+      formData.service_needed = card.getAttribute('data-service');
+      
+      // Auto advance to Step 4 after a short delay
+      setTimeout(() => {
+        if (currentStep === 3) goToStep(4);
+      }, 400);
+    });
+  });
+
+  const btnNext3 = document.querySelector('#step3 .btn-next');
+  if (btnNext3) {
+    btnNext3.addEventListener('click', () => {
+      goToStep(4);
+    });
+  }
+
+  // Step 4: Phone verification
+  const phoneInput = document.getElementById('consultPhone');
+  const phoneError = document.getElementById('phoneError');
+
+  const validatePhone = (phone) => {
+    // VN Phone pattern: 10 digits starting with 03, 05, 07, 08, 09
+    const pattern = /^(03|05|07|08|09)\d{8}$/;
+    return pattern.test(phone.replace(/\s+/g, ''));
+  };
+
+  if (phoneInput) {
+    phoneInput.addEventListener('input', () => {
+      if (phoneError) phoneError.style.display = 'none';
+    });
+  }
+
+  // Handle Form Submit (Step 4 Finalize)
+  const form = document.getElementById('multiStepConsultationForm');
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const phone = phoneInput.value;
+      if (!validatePhone(phone)) {
+        if (phoneError) phoneError.style.display = 'block';
+        phoneInput.focus();
+        return;
+      }
+
+      // Collect inputs
+      formData.customer_name = document.getElementById('consultName').value;
+      formData.phone_number = phone;
+      formData.address = document.getElementById('consultAddress').value;
+      formData.customer_note = document.getElementById('consultNote').value;
+
+      // Disable submit button during fetch
+      const submitBtn = document.getElementById('btnSubmitConsultation');
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang gửi yêu cầu...';
+      }
+
+      // Format stones list
+      let stonesString = formData.selected_stones.join(', ');
+      if (formData.need_sample_visit) {
+        stonesString += (stonesString ? ', ' : '') + 'Cần thợ mang mẫu đá thực tế qua tư vấn';
+      }
+      if (!stonesString) {
+        stonesString = 'Chưa chọn mẫu đá cụ thể';
+      }
+
+      const payload = {
+        customer_name: formData.customer_name,
+        phone_number: formData.phone_number,
+        address: formData.address,
+        room_region: translateRegion(formData.room_region),
+        selected_stone_names: stonesString,
+        service_needed: formData.service_needed,
+        customer_note: formData.customer_note
+      };
+
+      // 1. Submit to Supabase API
+      const dbSuccess = await sendToSupabase(payload);
+
+      // 2. Send Message notification to Telegram Bot
+      if (dbSuccess) {
+        await sendTelegramAlert(payload);
+      }
+
+      // 3. Show Success Screen
+      form.style.display = 'none';
+      const successScreen = document.getElementById('consultationSuccess');
+      successScreen.style.display = 'flex';
+
+      // 4. Handle countdown timer to close modal
+      let countdown = 5;
+      const timerSpan = document.getElementById('successTimer');
+      if (timerSpan) timerSpan.textContent = countdown;
+
+      const countdownInterval = setInterval(() => {
+        countdown--;
+        if (timerSpan) timerSpan.textContent = countdown;
+        
+        if (countdown <= 0) {
+          clearInterval(countdownInterval);
+          closeModal();
+        }
+      }, 1000);
+
+      // Manual done button
+      const doneBtn = document.getElementById('btnDoneConsultation');
+      if (doneBtn) {
+        doneBtn.onclick = () => {
+          clearInterval(countdownInterval);
+          closeModal();
+        };
+      }
+    });
+  }
+
+  // Translators for better DB readable records
+  const translateRegion = (region) => {
+    switch (region) {
+      case 'Kitchen': return 'Bàn bếp & Bàn đảo';
+      case 'Bathroom': return 'Phòng tắm / Lavabo';
+      case 'Living Room & Translucent Stone': return 'Vách TV / Tranh đá xuyên sáng';
+      case 'Stairs & Exterior': return 'Cầu thang / Mặt tiền / Tam cấp';
+      case 'Full House': return 'Toàn bộ căn nhà';
+      default: return region;
+    }
+  };
+
+  // API Call Supabase REST
+  const sendToSupabase = async (data) => {
+    if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || SUPABASE_CONFIG.url.startsWith('YOUR_')) {
+      console.log('Supabase chưa cấu hình. Fallback lưu dữ liệu vào LocalStorage:', data);
+      
+      const existing = JSON.parse(localStorage.getItem('consultation_requests') || '[]');
+      existing.push({
+        ...data,
+        status: 'pending',
+        created_at: new Date().toISOString()
+      });
+      localStorage.setItem('consultation_requests', JSON.stringify(existing));
+      return true;
+    }
+
+    try {
+      const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/consultation_requests`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': SUPABASE_CONFIG.anonKey,
+          'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({
+          customer_name: data.customer_name,
+          phone_number: data.phone_number,
+          address: data.address,
+          room_region: data.room_region,
+          selected_stone_names: data.selected_stone_names,
+          service_needed: data.service_needed,
+          customer_note: data.customer_note,
+          status: 'pending'
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error(`Response status: ${response.status}`);
+      }
+      return true;
+    } catch (err) {
+      console.warn('Lỗi kết nối Supabase, fallback lưu local:', err);
+      // Fallback local
+      const existing = JSON.parse(localStorage.getItem('consultation_requests') || '[]');
+      existing.push({
+        ...data,
+        status: 'pending',
+        created_at: new Date().toISOString()
+      });
+      localStorage.setItem('consultation_requests', JSON.stringify(existing));
+      return true;
+    }
+  };
+
+  // API Call Telegram Message
+  const sendTelegramAlert = async (data) => {
+    if (!TELEGRAM_CONFIG.botToken || !TELEGRAM_CONFIG.chatId || TELEGRAM_CONFIG.botToken.startsWith('YOUR_')) {
+      console.log('Telegram chưa cấu hình. Tin nhắn gửi đi sẽ có cấu trúc như sau:\n', 
+        `🔔 CÓ YÊU CẦU ĐO ĐẠC / THIẾT KẾ MỚI!\n` +
+        `- Khách hàng: ${data.customer_name} - ${data.phone_number}\n` +
+        `- Địa chỉ: ${data.address}\n` +
+        `- Hạng mục: ${data.room_region}\n` +
+        `- Mẫu đá chọn: ${data.selected_stone_names}\n` +
+        `- Dịch vụ: ${data.service_needed}\n` +
+        `- Ghi chú: ${data.customer_note || 'Không có ghi chú'}`
+      );
+      return;
+    }
+
+    const text = `🔔 *CÓ YÊU CẦU ĐO ĐẠC / THIẾT KẾ MỚI!*\n\n` +
+                 `👤 *Khách hàng:* ${data.customer_name}\n` +
+                 `📞 *SĐT/Zalo:* ${data.phone_number}\n` +
+                 `📍 *Địa chỉ:* ${data.address}\n` +
+                 `🏗️ *Hạng mục:* ${data.room_region}\n` +
+                 `💎 *Mẫu đá chọn:* ${data.selected_stone_names}\n` +
+                 `🛠️ *Dịch vụ:* ${data.service_needed}\n` +
+                 `📝 *Ghi chú:* ${data.customer_note || 'Không có ghi chú'}`;
+
+    try {
+      await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CONFIG.chatId,
+          text: text,
+          parse_mode: 'Markdown'
+        })
+      });
+    } catch (err) {
+      console.error('Lỗi khi gửi thông báo Telegram:', err);
+    }
+  };
+}
+
+/* ==========================================================================
+   11. DYNAMIC CATALOG PRODUCTS LOADER (Supabase API GET)
+   ========================================================================== */
+
+// Danh sách sản phẩm dự phòng (Fallback) khi database Supabase trống hoặc lỗi kết nối
+const FALLBACK_PRODUCTS = [
+  {
+    id: 1,
+    name: "White Carrara",
+    stone_type: "marble",
+    thumbnail_url: "assets/images/stone_carrara.jpg",
+    price_range: "Dày: 20mm | Polished",
+    is_translucent: false,
+    description: "Nhập khẩu trực tiếp từ vùng Tuscany, Italy. Vân xám nhẹ trên nền tuyết trắng tinh tế."
+  },
+  {
+    id: 2,
+    name: "Nero Marquina Gold",
+    stone_type: "granite",
+    thumbnail_url: "assets/images/stone_nero.jpg",
+    price_range: "Dày: 18mm | Polished",
+    is_translucent: false,
+    description: "Nền đen huyền bí điểm xuyết các đường chỉ trắng mảnh và vân vàng đồng vương giả."
+  },
+  {
+    id: 3,
+    name: "Palladiana Terrazzo",
+    stone_type: "terrazzo",
+    thumbnail_url: "assets/images/stone_terrazzo.jpg",
+    price_range: "Dày: 20mm | Honed",
+    is_translucent: false,
+    description: "Kết tụ các mảnh vụn đá cẩm thạch trắng, quartz thô tạo nên bề mặt đá độc đáo, sáng tạo."
+  }
+];
+
+// Tải sản phẩm từ Supabase
+async function fetchProductsAndInit() {
+  window.allProducts = [];
+
+  // Nếu Supabase chưa cấu hình URL, dùng ngay danh sách fallback
+  if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || SUPABASE_CONFIG.url.startsWith('YOUR_')) {
+    console.log('Supabase URL/Key chưa được cấu hình. Sử dụng danh sách sản phẩm fallback mặc định.');
+    window.allProducts = FALLBACK_PRODUCTS;
+    renderCatalog(window.allProducts);
+    return;
+  }
+
+  try {
+    const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/products?select=*`, {
+      method: 'GET',
+      headers: {
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
+      }
+    });
+
+    if (!response.ok) {
+      throw new Error(`Supabase API response status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    if (data && data.length > 0) {
+      window.allProducts = data;
+      console.log('Đã tải thành công danh sách sản phẩm từ Supabase:', window.allProducts);
+    } else {
+      console.log('Bảng products trên Supabase trống. Tải sản phẩm fallback.');
+      window.allProducts = FALLBACK_PRODUCTS;
+    }
+  } catch (err) {
+    console.warn('Lỗi kết nối database Supabase. Tự động chuyển sang sản phẩm dự phòng:', err);
+    window.allProducts = FALLBACK_PRODUCTS;
+  } finally {
+    renderCatalog(window.allProducts);
+  }
+}
+
+// Vẽ sản phẩm động ra giao diện Catalog
+function renderCatalog(products) {
+  const grid = document.getElementById('catalogProductsGrid');
+  if (!grid) return;
+
+  grid.innerHTML = '';
+
+  products.forEach(product => {
+    const card = document.createElement('div');
+    card.className = 'product-card';
+    card.setAttribute('data-category', (product.stone_type || 'other').toLowerCase());
+
+    // Label loại đá
+    let categoryLabel = 'Đá Tự Nhiên';
+    const type = (product.stone_type || '').toLowerCase();
+    if (type === 'marble') categoryLabel = 'Đá Marble Tự Nhiên';
+    else if (type === 'granite') categoryLabel = 'Đá Granite Cao Cấp';
+    else if (type === 'terrazzo') categoryLabel = 'Đá Terrazzo Ý';
+    else if (type === 'quartz') categoryLabel = 'Đá Thạch Anh Nhân Tạo';
+    else if (type === 'onyx') categoryLabel = 'Đá Onyx Xuyên Sáng';
+
+    card.innerHTML = `
+      <div class="product-img-wrapper">
+        <img src="${product.thumbnail_url || 'assets/images/stone_carrara.jpg'}" alt="${product.name}" class="product-img">
+        <div class="product-overlay">
+          <button class="btn-view-texture" aria-label="Xem chi tiết vân đá">🔍</button>
+        </div>
+      </div>
+      <div class="product-info">
+        <span class="product-category">${categoryLabel}</span>
+        <h3 class="product-title">${product.name}</h3>
+        <p class="product-desc">${product.description || 'Sản phẩm gạch đá ốp lát nghệ thuật chất lượng cao, nhập khẩu nguyên khối.'}</p>
+        <div class="product-footer">
+          <span class="product-spec">${product.price_range || 'Liên hệ báo giá'}</span>
+          <button class="btn-quote">Báo giá &rarr;</button>
+        </div>
+      </div>
+    `;
+
+    grid.appendChild(card);
+  });
+
+  // Tái kích hoạt bộ lọc và Lightbox cho các phần tử chèn động
+  rebindDynamicCatalogEvents();
+}
+
+// Re-bind các sự kiện Lightbox và sự kiện click Báo Giá cho các thẻ HTML được render động
+function rebindDynamicCatalogEvents() {
+  // 1. Re-bind Lightbox
+  const lightbox = document.getElementById('lightboxModal');
+  const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
+  const lightboxTitle = lightbox ? lightbox.querySelector('.lightbox-title') : null;
+  const viewBtns = document.querySelectorAll('#catalogProductsGrid .btn-view-texture');
+  const closeBtn = lightbox ? lightbox.querySelector('.lightbox-close') : null;
+
+  if (lightbox && lightboxImg && viewBtns.length > 0) {
+    viewBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const card = btn.closest('.product-card');
+        const img = card.querySelector('.product-img');
+        const title = card.querySelector('.product-title');
+
+        if (img) {
+          lightboxImg.src = img.src;
+          lightboxImg.alt = img.alt || '';
+        }
+        if (title && lightboxTitle) {
+          lightboxTitle.textContent = title.textContent;
+        }
+
+        lightbox.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      });
+    });
+  }
+
+  // 2. Re-bind Báo Giá - Mở Multi-step form và chọn sẵn context
+  const quoteBtns = document.querySelectorAll('#catalogProductsGrid .btn-quote');
+  const consultationModal = document.getElementById('consultationModal');
+
+  if (consultationModal && quoteBtns.length > 0) {
+    quoteBtns.forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        e.preventDefault();
+        
+        // 1. Mở modal Multi-Step Form
+        const openEvent = new Event('click');
+        const openConsultationBtn = document.querySelector('.btn-open-consultation');
+        if (openConsultationBtn) {
+          openConsultationBtn.dispatchEvent(openEvent);
+        } else {
+          consultationModal.classList.add('active');
+          document.body.style.overflow = 'hidden';
+        }
+
+        // 2. Phân tích loại sản phẩm và tự động chọn các bước
+        const card = btn.closest('.product-card');
+        const title = card.querySelector('.product-title').textContent.trim();
+        const stoneType = card.getAttribute('data-category') || 'marble';
+
+        // Ánh xạ từ loại đá sang không gian sử dụng phù hợp nhất
+        let mappedRegion = 'Kitchen'; // Mặc định là bếp
+        if (stoneType === 'marble') mappedRegion = 'Bathroom';
+        else if (stoneType === 'onyx') mappedRegion = 'Living Room & Translucent Stone';
+        else if (stoneType === 'granite') mappedRegion = 'Stairs & Exterior';
+
+        // Giả lập click chọn thẻ không gian ở Bước 1
+        const regionCard = document.querySelector(`.region-card[data-region="${mappedRegion}"]`);
+        if (regionCard) {
+          regionCard.click(); // Card click sẽ tự động chuyển sang Bước 2
+          
+          // Đợi 0.5s để Bước 2 render xong danh sách đá động, tích chọn đá
+          setTimeout(() => {
+            const stoneCards = document.querySelectorAll('.stone-card');
+            stoneCards.forEach(stoneCard => {
+              const stoneName = stoneCard.getAttribute('data-stone-name');
+              if (stoneName && (stoneName.toLowerCase().includes(title.toLowerCase()) || title.toLowerCase().includes(stoneName.toLowerCase()))) {
+                // Chỉ click chọn nếu nó chưa được selected
+                if (!stoneCard.classList.contains('selected')) {
+                  stoneCard.click();
+                }
+              }
+            });
+          }, 500);
+        }
+      });
+    });
+  }
+}
+
+
