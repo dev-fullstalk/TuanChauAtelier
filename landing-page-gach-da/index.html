@@ -27,12 +27,15 @@
 
   <!-- INTRO SCREEN -->
   <div id="intro-screen">
-    <div class="intro-backdrop"></div>
+    <div class="intro-backdrop">
+      <video autoplay muted loop playsinline id="intro-video">
+        <source src="assets/videos/thế_đoạn_video_đó_bạn_bỏ_đoạn.mp4" type="video/mp4">
+      </video>
+    </div>
     <div class="intro-content">
       <div class="intro-badge">PREMIUM LUXURY STONE</div>
       <h1 class="intro-title">TUAN CHAU ATELIER</h1>
       <p class="intro-subtitle">Kiến Tạo Không Gian • Tranh Đá Xuyên Sáng</p>
-      <div class="intro-loader"><div class="intro-bar"></div></div>
     </div>
     <button id="skip-intro">Bỏ qua ✕</button>
   </div>
@@ -88,6 +91,12 @@
         <div class="hero-buttons">
           <button class="btn btn-primary btn-open-consultation">Nhận Tư Vấn & Khảo Sát</button>
           <a href="#catalog" class="btn btn-secondary">Xem bộ sưu tập</a>
+          <button class="btn btn-secondary btn-watch-video" id="btnWatchVideo">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle; display: inline-block;">
+              <path d="M8 5v14l11-7z"/>
+            </svg>
+            Xem video giới thiệu
+          </button>
         </div>
       </div>
     </div>
@@ -329,6 +338,10 @@
             <input type="tel" id="quotePhone" class="form-input" placeholder="094 123 4567" required>
           </div>
           <div class="form-group">
+            <label for="quoteAddress" class="form-label">Địa chỉ công trình *</label>
+            <input type="text" id="quoteAddress" class="form-input" placeholder="Ví dụ: 12 Vân Đồn, Bạch Đằng, Hà Nội" required>
+          </div>
+          <div class="form-group">
             <label for="quoteStoneType" class="form-label">Vật liệu cần tư vấn</label>
             <select id="quoteStoneType" class="form-input" style="appearance: none; background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748B%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E'); background-repeat: no-repeat; background-position: right 16px top 50%; background-size: 12px auto; padding-right: 40px;">
               <option value="marble-carrara">Đá Marble Trắng Carrara</option>
@@ -414,6 +427,19 @@
     </div>
   </div>
 
+  <!-- Video Intro Modal -->
+  <div class="modal video-modal" id="videoModal">
+    <div class="modal-content video-modal-content">
+      <button class="modal-close video-modal-close" id="closeVideoModal" aria-label="Đóng video">✕</button>
+      <div class="video-player-wrapper">
+        <video controls id="mainVideoPlayer" style="width: 100%; height: 100%; object-fit: contain; display: block;">
+          <source src="assets/videos/thế_đoạn_video_đó_bạn_bỏ_đoạn.mp4" type="video/mp4">
+          Trình duyệt của bạn không hỗ trợ video HTML5.
+        </video>
+      </div>
+    </div>
+  </div>
+
   <!-- Interactive Quote Request Modal -->
   <div class="modal" id="quoteModal">
     <div class="modal-content">
@@ -429,6 +455,10 @@
         <div class="form-group">
           <label for="modalQuotePhone" class="form-label">Số điện thoại *</label>
           <input type="tel" id="modalQuotePhone" class="form-input" placeholder="094 123 4567" required>
+        </div>
+        <div class="form-group">
+          <label for="modalQuoteAddress" class="form-label">Địa chỉ công trình *</label>
+          <input type="text" id="modalQuoteAddress" class="form-input" placeholder="Ví dụ: 12 Vân Đồn, Bạch Đằng, Hà Nội" required>
         </div>
         <div class="form-group">
           <label for="modalQuoteStone" class="form-label">Sản phẩm cần tư vấn</label>
@@ -452,29 +482,7 @@
   <script src="js/config.js"></script>
   <script src="js/app-intro.js"></script>
   <script src="js/main.js"></script>
-  
-  <script>
-    // Handle modal form inside index.html specifically
-    const modalForm = document.getElementById('modalQuoteForm');
-    if (modalForm) {
-      modalForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const name = document.getElementById('modalQuoteName').value;
-        const phone = document.getElementById('modalQuotePhone').value;
-        
-        // Trigger the toast showing logic (defined in main.js)
-        if (window.showToast) {
-          window.showToast(`Cảm ơn anh/chị ${name}. Tuan Chau Atelier đã nhận được yêu cầu tư vấn. Chúng tôi sẽ gọi lại cho anh/chị qua số ${phone} trong 15 phút.`);
-        } else {
-          alert(`Cảm ơn anh/chị ${name}. Yêu cầu của bạn đã được tiếp nhận.`);
-        }
-        
-        modalForm.reset();
-        document.getElementById('quoteModal').classList.remove('active');
-        document.body.style.overflow = '';
-      });
-    }
-  </script>
+
 
   <!-- Floating CTA Button -->
   <button class="floating-cta-btn" id="floatingCtaBtn" aria-label="Nhận tư vấn và khảo sát trực tiếp">

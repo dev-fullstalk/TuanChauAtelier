@@ -21,13 +21,20 @@ document.addEventListener('DOMContentLoaded', () => {
         introScreen.classList.add('fade-out');
         document.body.style.overflow = '';
         sessionStorage.setItem('intro-played', 'true');
+        
+        // Pause video to free resources
+        const introVid = document.getElementById('intro-video');
+        if (introVid) {
+          introVid.pause();
+        }
+        
         setTimeout(() => {
           introScreen.remove();
         }, 800);
       };
       
-      // Auto close after 2.5 seconds (2500ms)
-      const autoCloseTimeout = setTimeout(dismissIntro, 2500);
+      // Auto close after 4.5 seconds (4500ms) to enjoy the video backdrop
+      const autoCloseTimeout = setTimeout(dismissIntro, 4500);
       
       if (skipIntroBtn) {
         skipIntroBtn.addEventListener('click', () => {
@@ -85,6 +92,7 @@ function initializeInteractions() {
   initNewsletterForm();
   initScrollAnimations();
   initConsultationMultiStep(); // Initialize Multi-Step Consultation Form
+  initVideoModal(); // Initialize interactive Video Modal
   fetchProductsAndInit(); // Tải dữ liệu sản phẩm động từ Supabase
   
   // Custom Hook for App intro interactions since it's loaded
@@ -255,12 +263,13 @@ function initQuoteModal() {
   const modalClose = modal ? modal.querySelector('.modal-close') : null;
   const quoteBtns = document.querySelectorAll('.btn-quote, .btn-hero-cta, .btn-nav-cta');
   const quoteForm = document.getElementById('quoteRequestForm');
+  const modalQuoteForm = document.getElementById('modalQuoteForm');
 
-  if (!modal || quoteBtns.length === 0) return;
+  if (!modal && quoteBtns.length === 0) return;
 
+  // Prepopulate select element in quoteModal and open it when clicking "Báo giá / Nhận tư vấn"
   quoteBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      // Prevent anchor jump if href is contact
       if (btn.classList.contains('btn-quote') || btn.classList.contains('btn-hero-cta') || btn.classList.contains('btn-nav-cta')) {
         // Open Modal
         modal.classList.add('active');
@@ -268,7 +277,7 @@ function initQuoteModal() {
 
         // Prepopulate select option based on product card context if triggered from a card
         const card = btn.closest('.product-card');
-        const selectElement = document.getElementById('quoteStoneType');
+        const selectElement = document.getElementById('modalQuoteStone'); // modal select
         
         if (card && selectElement) {
           const title = card.querySelector('.product-title').textContent.trim();
@@ -301,20 +310,144 @@ function initQuoteModal() {
     }
   });
 
-  // Handle Form Submit
+  // Handle Contact Section Form Submit (#quoteRequestForm)
   if (quoteForm) {
-    quoteForm.addEventListener('submit', (e) => {
+    quoteForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       
-      // Simulate form submission
-      const name = document.getElementById('quoteName').value;
-      const phone = document.getElementById('quotePhone').value;
-      
-      showToast(`Cảm ơn anh/chị ${name}. Tuan Chau Atelier đã nhận được yêu cầu tư vấn. Chúng tôi sẽ gọi lại cho anh/chị qua số ${phone} trong 15 phút.`);
-      quoteForm.reset();
-      closeModal();
+      const name = document.getElementById('quoteName').value.trim();
+      const phone = document.getElementById('quotePhone').value.trim();
+      const address = document.getElementById('quoteAddress').value.trim();
+      const message = document.getElementById('quoteMessage').value.trim();
+      const selectElement = document.getElementById('quoteStoneType');
+      const selectedStoneText = selectElement ? selectElement.options[selectElement.selectedIndex].text : 'Tư vấn chất liệu khác...';
+
+      if (!validatePhone(phone)) {
+        showToast('Số điện thoại không hợp lệ. Cần gồm 10 chữ số (VD: 0941234567).');
+        document.getElementById('quotePhone').focus();
+        return;
+      }
+
+      const submitBtn = quoteForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn ? submitBtn.textContent : 'Gửi yêu cầu';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang gửi yêu cầu...';
+      }
+
+      const payload = {
+        customer_name: name,
+        phone_number: phone,
+        address: address,
+        room_region: 'Chân trang (Liên hệ nhanh)',
+        selected_stone_names: selectedStoneText,
+        service_needed: 'Tư vấn báo giá trực tiếp',
+        customer_note: message
+      };
+
+      const dbSuccess = await sendToSupabase(payload);
+      if (dbSuccess) {
+        await sendTelegramAlert(payload);
+        showToast(`Cảm ơn anh/chị ${name}. Tuan Chau Atelier đã nhận được yêu cầu tư vấn. Chúng tôi sẽ gọi lại qua số ${phone} trong 15 phút.`);
+        quoteForm.reset();
+      } else {
+        showToast('Có lỗi xảy ra khi gửi yêu cầu. Quý khách vui lòng thử lại sau.');
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
     });
   }
+
+  // Handle Quick Quote Modal Form Submit (#modalQuoteForm)
+  if (modalQuoteForm) {
+    modalQuoteForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const name = document.getElementById('modalQuoteName').value.trim();
+      const phone = document.getElementById('modalQuotePhone').value.trim();
+      const address = document.getElementById('modalQuoteAddress').value.trim();
+      const message = document.getElementById('modalQuoteMsg').value.trim();
+      const selectElement = document.getElementById('modalQuoteStone');
+      const selectedStoneText = selectElement ? selectElement.options[selectElement.selectedIndex].text : 'Tư vấn sản phẩm khác...';
+
+      if (!validatePhone(phone)) {
+        showToast('Số điện thoại không hợp lệ. Cần gồm 10 chữ số (VD: 0941234567).');
+        document.getElementById('modalQuotePhone').focus();
+        return;
+      }
+
+      const submitBtn = modalQuoteForm.querySelector('button[type="submit"]');
+      const originalText = submitBtn ? submitBtn.textContent : 'Nhận báo giá ngay';
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Đang gửi yêu cầu...';
+      }
+
+      const payload = {
+        customer_name: name,
+        phone_number: phone,
+        address: address,
+        room_region: 'Modal báo giá (Tư vấn nhanh)',
+        selected_stone_names: selectedStoneText,
+        service_needed: 'Tư vấn báo giá bản vẽ',
+        customer_note: message
+      };
+
+      const dbSuccess = await sendToSupabase(payload);
+      if (dbSuccess) {
+        await sendTelegramAlert(payload);
+        showToast(`Cảm ơn anh/chị ${name}. Yêu cầu tư vấn sản phẩm "${selectedStoneText}" đã được tiếp nhận.`);
+        modalQuoteForm.reset();
+        closeModal();
+      } else {
+        showToast('Có lỗi xảy ra khi gửi yêu cầu. Quý khách vui lòng thử lại sau.');
+      }
+
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = originalText;
+      }
+    });
+  }
+}
+
+// 7.5. Video Intro Modal
+function initVideoModal() {
+  const modal = document.getElementById('videoModal');
+  const btnWatchVideo = document.getElementById('btnWatchVideo');
+  const modalClose = modal ? modal.querySelector('#closeVideoModal') : null;
+  const videoPlayer = document.getElementById('mainVideoPlayer');
+
+  if (!modal || !btnWatchVideo || !videoPlayer) return;
+
+  btnWatchVideo.addEventListener('click', () => {
+    modal.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    videoPlayer.play().catch(err => {
+      console.warn("Autoplay was prevented by browser policy:", err);
+    });
+  });
+
+  const closeModal = () => {
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    videoPlayer.pause();
+    videoPlayer.currentTime = 0;
+  };
+
+  if (modalClose) modalClose.addEventListener('click', closeModal);
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) closeModal();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      closeModal();
+    }
+  });
 }
 
 // 8. Newsletter Form Submit
@@ -469,6 +602,108 @@ const STONE_DATABASE = {
     { name: "Tranh đá Onyx Xuyên Sáng Gold", code: "OX-301", thumb: "assets/images/stone_terrazzo.jpg" },
     { name: "Đá Quartz Trắng Vân Calacatta", code: "QZ-801", thumb: "assets/images/stone_carrara.jpg" }
   ]
+};
+
+// ==========================================================================
+// DB & API HELPER FUNCTIONS (Supabase & Telegram)
+// ==========================================================================
+
+const validatePhone = (phone) => {
+  // VN Phone pattern: 10 digits starting with 03, 05, 07, 08, 09
+  const pattern = /^(03|05|07|08|09)\d{8}$/;
+  return pattern.test(phone.replace(/\s+/g, ''));
+};
+
+const sendToSupabase = async (data) => {
+  if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || SUPABASE_CONFIG.url.startsWith('YOUR_')) {
+    console.log('Supabase chưa cấu hình. Fallback lưu dữ liệu vào LocalStorage:', data);
+    
+    const existing = JSON.parse(localStorage.getItem('consultation_requests') || '[]');
+    existing.push({
+      ...data,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    });
+    localStorage.setItem('consultation_requests', JSON.stringify(existing));
+    return true;
+  }
+
+  try {
+    const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/consultation_requests`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+        'Prefer': 'return=minimal'
+      },
+      body: JSON.stringify({
+        customer_name: data.customer_name,
+        phone_number: data.phone_number,
+        address: data.address,
+        room_region: data.room_region,
+        selected_stone_names: data.selected_stone_names,
+        service_needed: data.service_needed,
+        customer_note: data.customer_note,
+        status: 'pending'
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`Response status: ${response.status}`);
+    }
+    return true;
+  } catch (err) {
+    console.warn('Lỗi kết nối Supabase, fallback lưu local:', err);
+    const existing = JSON.parse(localStorage.getItem('consultation_requests') || '[]');
+    existing.push({
+      ...data,
+      status: 'pending',
+      created_at: new Date().toISOString()
+    });
+    localStorage.setItem('consultation_requests', JSON.stringify(existing));
+    return true;
+  }
+};
+
+const sendTelegramAlert = async (data) => {
+  if (!TELEGRAM_CONFIG.botToken || !TELEGRAM_CONFIG.chatId || TELEGRAM_CONFIG.botToken.startsWith('YOUR_')) {
+    console.log('Telegram chưa cấu hình. Tin nhắn gửi đi sẽ có cấu trúc như sau:\n', 
+      `🔔 CÓ YÊU CẦU ĐO ĐẠC / THIẾT KẾ MỚI!\n` +
+      `- Khách hàng: ${data.customer_name} - ${data.phone_number}\n` +
+      `- Địa chỉ: ${data.address}\n` +
+      `- Hạng mục: ${data.room_region}\n` +
+      `- Mẫu đá chọn: ${data.selected_stone_names}\n` +
+      `- Dịch vụ: ${data.service_needed}\n` +
+      `- Ghi chú: ${data.customer_note || 'Không có ghi chú'}`
+    );
+    return;
+  }
+
+  const text = `🔔 *CÓ YÊU CẦU ĐO ĐẠC / THIẾT KẾ MỚI!*\n\n` +
+               `👤 *Khách hàng:* ${data.customer_name}\n` +
+               `📞 *SĐT/Zalo:* ${data.phone_number}\n` +
+               `📍 *Địa chỉ:* ${data.address}\n` +
+               `🏗️ *Hạng mục:* ${data.room_region}\n` +
+               `💎 *Mẫu đá chọn:* ${data.selected_stone_names}\n` +
+               `🛠️ *Dịch vụ:* ${data.service_needed}\n` +
+               `📝 *Ghi chú:* ${data.customer_note || 'Không có ghi chú'}`;
+
+  try {
+    await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        chat_id: TELEGRAM_CONFIG.chatId,
+        text: text,
+        parse_mode: 'Markdown'
+      })
+    });
+  } catch (err) {
+    console.error('Lỗi khi gửi thông báo Telegram:', err);
+  }
 };
 
 function initConsultationMultiStep() {
@@ -781,12 +1016,6 @@ function initConsultationMultiStep() {
   const phoneInput = document.getElementById('consultPhone');
   const phoneError = document.getElementById('phoneError');
 
-  const validatePhone = (phone) => {
-    // VN Phone pattern: 10 digits starting with 03, 05, 07, 08, 09
-    const pattern = /^(03|05|07|08|09)\d{8}$/;
-    return pattern.test(phone.replace(/\s+/g, ''));
-  };
-
   if (phoneInput) {
     phoneInput.addEventListener('input', () => {
       if (phoneError) phoneError.style.display = 'none';
@@ -889,100 +1118,7 @@ function initConsultationMultiStep() {
     }
   };
 
-  // API Call Supabase REST
-  const sendToSupabase = async (data) => {
-    if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || SUPABASE_CONFIG.url.startsWith('YOUR_')) {
-      console.log('Supabase chưa cấu hình. Fallback lưu dữ liệu vào LocalStorage:', data);
-      
-      const existing = JSON.parse(localStorage.getItem('consultation_requests') || '[]');
-      existing.push({
-        ...data,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      });
-      localStorage.setItem('consultation_requests', JSON.stringify(existing));
-      return true;
-    }
 
-    try {
-      const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/consultation_requests`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'apikey': SUPABASE_CONFIG.anonKey,
-          'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
-          'Prefer': 'return=minimal'
-        },
-        body: JSON.stringify({
-          customer_name: data.customer_name,
-          phone_number: data.phone_number,
-          address: data.address,
-          room_region: data.room_region,
-          selected_stone_names: data.selected_stone_names,
-          service_needed: data.service_needed,
-          customer_note: data.customer_note,
-          status: 'pending'
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error(`Response status: ${response.status}`);
-      }
-      return true;
-    } catch (err) {
-      console.warn('Lỗi kết nối Supabase, fallback lưu local:', err);
-      // Fallback local
-      const existing = JSON.parse(localStorage.getItem('consultation_requests') || '[]');
-      existing.push({
-        ...data,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      });
-      localStorage.setItem('consultation_requests', JSON.stringify(existing));
-      return true;
-    }
-  };
-
-  // API Call Telegram Message
-  const sendTelegramAlert = async (data) => {
-    if (!TELEGRAM_CONFIG.botToken || !TELEGRAM_CONFIG.chatId || TELEGRAM_CONFIG.botToken.startsWith('YOUR_')) {
-      console.log('Telegram chưa cấu hình. Tin nhắn gửi đi sẽ có cấu trúc như sau:\n', 
-        `🔔 CÓ YÊU CẦU ĐO ĐẠC / THIẾT KẾ MỚI!\n` +
-        `- Khách hàng: ${data.customer_name} - ${data.phone_number}\n` +
-        `- Địa chỉ: ${data.address}\n` +
-        `- Hạng mục: ${data.room_region}\n` +
-        `- Mẫu đá chọn: ${data.selected_stone_names}\n` +
-        `- Dịch vụ: ${data.service_needed}\n` +
-        `- Ghi chú: ${data.customer_note || 'Không có ghi chú'}`
-      );
-      return;
-    }
-
-    const text = `🔔 *CÓ YÊU CẦU ĐO ĐẠC / THIẾT KẾ MỚI!*\n\n` +
-                 `👤 *Khách hàng:* ${data.customer_name}\n` +
-                 `📞 *SĐT/Zalo:* ${data.phone_number}\n` +
-                 `📍 *Địa chỉ:* ${data.address}\n` +
-                 `🏗️ *Hạng mục:* ${data.room_region}\n` +
-                 `💎 *Mẫu đá chọn:* ${data.selected_stone_names}\n` +
-                 `🛠️ *Dịch vụ:* ${data.service_needed}\n` +
-                 `📝 *Ghi chú:* ${data.customer_note || 'Không có ghi chú'}`;
-
-    try {
-      await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CONFIG.chatId,
-          text: text,
-          parse_mode: 'Markdown'
-        })
-      });
-    } catch (err) {
-      console.error('Lỗi khi gửi thông báo Telegram:', err);
-    }
-  };
 }
 
 /* ==========================================================================
@@ -1020,6 +1156,17 @@ const FALLBACK_PRODUCTS = [
   }
 ];
 
+// Chuẩn hóa loại đá từ Database tiếng Việt sang từ khóa tiếng Anh phục vụ lọc và phân loại
+function normalizeStoneType(stoneType) {
+  const t = (stoneType || '').toLowerCase();
+  if (t.includes('marble') || t.includes('cẩm thạch')) return 'marble';
+  if (t.includes('granite') || t.includes('hoa cương')) return 'granite';
+  if (t.includes('quartz') || t.includes('thạch anh')) return 'quartz';
+  if (t.includes('onyx') || t.includes('ngọc') || t.includes('xuyên sáng')) return 'onyx';
+  if (t.includes('terrazzo')) return 'terrazzo';
+  return 'other';
+}
+
 // Tải sản phẩm từ Supabase
 async function fetchProductsAndInit() {
   window.allProducts = [];
@@ -1047,7 +1194,14 @@ async function fetchProductsAndInit() {
 
     const data = await response.json();
     if (data && data.length > 0) {
-      window.allProducts = data;
+      // Chuẩn hóa trường stone_type từ tiếng Việt sang tiếng Anh lowercase để khớp bộ lọc
+      window.allProducts = data.map(product => {
+        const typeNormalized = normalizeStoneType(product.stone_type);
+        return {
+          ...product,
+          stone_type: typeNormalized
+        };
+      });
       console.log('Đã tải thành công danh sách sản phẩm từ Supabase:', window.allProducts);
     } else {
       console.log('Bảng products trên Supabase trống. Tải sản phẩm fallback.');
