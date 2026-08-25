@@ -25,20 +25,7 @@
 </head>
 <body>
 
-  <!-- INTRO SCREEN -->
-  <div id="intro-screen">
-    <div class="intro-backdrop">
-      <video autoplay muted playsinline id="intro-video">
-        <source src="assets/videos/thế_đoạn_video_đó_bạn_bỏ_đoạn.mp4" type="video/mp4">
-      </video>
-    </div>
-    <div class="intro-content">
-      <div class="intro-badge">PREMIUM LUXURY STONE</div>
-      <h1 class="intro-title">TUAN CHAU ATELIER</h1>
-      <p class="intro-subtitle">Kiến Tạo Không Gian • Tranh Đá Xuyên Sáng</p>
-    </div>
-    <button id="skip-intro">Bỏ qua ✕</button>
-  </div>
+
 
   <!-- Dynamic Header Container (served by js/main.js dynamically on server) -->
   <!-- Inline markup acts as an offline fallback for file:// protocol -->
@@ -59,7 +46,7 @@
         <li><a href="#catalog" class="nav-link">Bộ sưu tập</a></li>
         <li><a href="#app-intro" class="nav-link">Trải nghiệm App</a></li>
         <li><a href="#contact" class="nav-link">Liên hệ</a></li>
-        <li class="mobile-cta-item"><button class="btn btn-primary btn-open-consultation" style="width: 100%; margin-top: 10px;">Nhận Tư Vấn & Khảo Sát</button></li>
+        <li class="mobile-cta-item"><a href="https://zalo.me/0833301330" target="_blank" rel="noopener noreferrer" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Nhận Tư Vấn & Khảo Sát</a></li>
       </ul>
       <div class="nav-actions">
         <button class="theme-toggle-btn" id="themeToggleBtn" aria-label="Toggle light/dark theme">
@@ -70,7 +57,7 @@
             <path d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zm0-5a1 1 0 0 1 1-1h0a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0V3a1 1 0 0 1 1-1zm0 16a1 1 0 0 1 1 1v2a1 1 0 1 1-2 0v-2a1 1 0 0 1 1-1zM5.636 4.222a1 1 0 0 1 1.414 0l1.414 1.414a1 1 0 1 1-1.414 1.414L5.636 5.636a1 1 0 0 1 0-1.414zm10.182 10.182a1 1 0 0 1 1.414 0l1.414 1.414a1 1 0 1 1-1.414 1.414l-1.414-1.414a1 1 0 0 1 0-1.414zM2 12a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2H3a1 1 0 0 1-1-1zm14 0a1 1 0 0 1 1-1h2a1 1 0 1 1 0 2h-2a1 1 0 0 1-1-1zM6.343 17.657l1.414-1.414a1 1 0 1 1 1.414 1.414l-1.414 1.414a1 1 0 0 1-1.414-1.414zm10.182-10.182l1.414-1.414a1 1 0 1 1 1.414 1.414l-1.414 1.414a1 1 0 0 1-1.414-1.414z"/>
           </svg>
         </button>
-        <button class="btn btn-secondary btn-nav-cta btn-open-consultation">Nhận Tư Vấn & Khảo Sát</button>
+        <a href="https://zalo.me/0833301330" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-nav-cta">Nhận Tư Vấn & Khảo Sát</a>
         <button class="mobile-menu-toggle" id="mobileMenuToggle" aria-label="Toggle navigation menu">
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 6h16M4 12h16M4 18h16" stroke-linecap="round"/>
@@ -488,18 +475,21 @@
 
   <!-- Scripts -->
   <script src="js/config.js"></script>
+  <script src="js/api/supabase.js"></script>
+  <script src="js/api/telegram.js"></script>
   <script src="js/app-intro.js"></script>
   <script src="js/main.js"></script>
 
 
-  <!-- Floating CTA Button -->
-  <button class="floating-cta-btn" id="floatingCtaBtn" aria-label="Nhận tư vấn và khảo sát trực tiếp">
-    <div class="pulse-ring"></div>
-    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-      <path d="M20 15.5c-1.2 0-2.4-.2-3.6-.6-.3-.1-.7 0-1 .3l-2.2 2.2c-2.8-1.4-5.1-3.8-6.6-6.6l2.2-2.2c.3-.3.4-.7.2-1-.3-1.1-.5-2.3-.5-3.5 0-.6-.4-1-1-1H4c-.6 0-1 .4-1 1 0 9.4 7.6 17 17 17 .6 0 1-.4 1-1v-3.5c0-.6-.4-1-1-1z"/>
+  <!-- Floating Zalo Button -->
+  <a href="https://zalo.me/0833301330" target="_blank" rel="noopener noreferrer" class="floating-cta-btn floating-zalo-btn" id="floatingCtaBtn" aria-label="Chat Zalo tư vấn">
+    <div class="zalo-pulse-ring"></div>
+    <div class="zalo-tooltip">Chat Zalo tư vấn</div>
+    <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M20 4C10.5 4 4 9.8 4 17.5C4 21.8 6.2 25.6 9.8 28.1C9.2 30.3 8 32.7 8 32.7C8 32.7 10.8 32.5 13.9 30.5C15.8 31.1 17.9 31.5 20 31.5C29.5 31.5 36 25.7 36 17.5C36 9.8 29.5 4 20 4Z" fill="#0068FF"/>
+      <path d="M14 23H26V21H18.7L26 14.7V13H14V15H21.3L14 21.3V23Z" fill="white"/>
     </svg>
-    <span>Tư Vấn & Khảo Sát</span>
-  </button>
+  </a>
 
   <!-- Multi-Step Consultation Modal -->
   <div class="modal consultation-modal" id="consultationModal">

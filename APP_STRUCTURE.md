@@ -34,7 +34,10 @@ TuanChauAtelier/
 │   └── js/
 │       ├── config.js       # File cấu hình kết nối Supabase Client (Anon Key) và Telegram
 │       ├── app-intro.js    # Logic giả lập giao diện trải nghiệm ứng dụng di động
-│       └── main.js         # File chứa toàn bộ logic tương tác chính (Bộ lọc, Modal, Gọi API)
+│       ├── main.js         # File chứa toàn bộ logic tương tác chính (Bộ lọc, Modal, DOM)
+│       └── api/            # Thư mục chứa các API Helper kết nối ngoài (Supabase, Telegram)
+│           ├── supabase.js # API gọi sản phẩm và ghi nhận yêu cầu tư vấn
+│           └── telegram.js # API gửi thông báo tức thời tới Telegram Bot
 ├── .gitignore              # Chỉ định các tệp Git cần bỏ qua (ví dụ: .env, node_modules)
 ├── README.md               # Hướng dẫn chạy dự án sơ bộ
 └── APP_STRUCTURE.md        # Tài liệu cấu trúc ứng dụng và thiết kế database (File này)

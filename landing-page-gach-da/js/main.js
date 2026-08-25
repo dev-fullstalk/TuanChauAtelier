@@ -4,74 +4,7 @@
    ========================================================================== */
 
 document.addEventListener('DOMContentLoaded', () => {
-  // 0. Splash Screen Intro Handler
-  const introScreen = document.getElementById('intro-screen');
-  const skipIntroBtn = document.getElementById('skip-intro');
-  
-  if (introScreen) {
-    const hasIntroPlayed = sessionStorage.getItem('intro-played') === 'true';
-    
-    if (hasIntroPlayed) {
-      introScreen.remove();
-      document.body.style.overflow = '';
-    } else {
-      document.body.style.overflow = 'hidden';
-      
-      const dismissIntro = () => {
-        introScreen.classList.add('fade-out');
-        document.body.style.overflow = '';
-        sessionStorage.setItem('intro-played', 'true');
-        
-        // Pause video to free resources
-        const introVid = document.getElementById('intro-video');
-        if (introVid) {
-          introVid.pause();
-        }
-        
-        setTimeout(() => {
-          introScreen.remove();
-        }, 800);
-      };
-      
-      const introVid = document.getElementById('intro-video');
-      let fallbackTimeout;
 
-      if (introVid) {
-        // Ensure loop is false so ended event can fire
-        introVid.loop = false;
-        
-        // When video ends, dismiss intro screen
-        introVid.addEventListener('ended', dismissIntro);
-        
-        // Safety fallback of 15 seconds in case autoplay is blocked or video fails to load
-        fallbackTimeout = setTimeout(dismissIntro, 15000);
-        
-        // Clear safety timeout if ended fires first
-        introVid.addEventListener('ended', () => {
-          clearTimeout(fallbackTimeout);
-        });
-
-        // Play explicitly and handle mobile autoplay block cases
-        introVid.play().catch(error => {
-          console.warn("Autoplay was prevented by browser policy, bypassing intro screen:", error);
-          clearTimeout(fallbackTimeout);
-          dismissIntro();
-        });
-      } else {
-        // Fallback if no video element
-        fallbackTimeout = setTimeout(dismissIntro, 4500);
-      }
-      
-      if (skipIntroBtn) {
-        skipIntroBtn.addEventListener('click', () => {
-          if (fallbackTimeout) {
-            clearTimeout(fallbackTimeout);
-          }
-          dismissIntro();
-        });
-      }
-    }
-  }
 
   // 1. Dynamic Component Loader
   const isLocalFile = window.location.protocol === 'file:';
@@ -257,7 +190,7 @@ function initLightbox() {
   const viewBtns = document.querySelectorAll('.btn-view-texture');
   const closeBtn = lightbox ? lightbox.querySelector('.lightbox-close') : null;
 
-  if (!lightbox || !lightboxImg || viewBtns.length === 0) return;
+  if (!lightbox || !lightboxImg) return;
 
   viewBtns.forEach(btn => {
     btn.addEventListener('click', () => {
@@ -285,8 +218,8 @@ function initLightbox() {
 
   if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (e) => {
-    // Đóng lightbox khi click vào bất kỳ vùng nào không phải là thẻ IMG
-    if (e.target.tagName !== 'IMG') {
+    // Chỉ đóng khi click ngoài vùng hiển thị ảnh (lightbox-img-wrapper) hoặc click nút đóng
+    if (!e.target.closest('.lightbox-img-wrapper') || e.target.closest('.lightbox-close')) {
       closeLightbox();
     }
   });
@@ -303,7 +236,7 @@ function initLightbox() {
 function initQuoteModal() {
   const modal = document.getElementById('quoteModal');
   const modalClose = modal ? modal.querySelector('.modal-close') : null;
-  const quoteBtns = document.querySelectorAll('.btn-quote, .btn-hero-cta, .btn-nav-cta');
+  const quoteBtns = document.querySelectorAll('.btn-hero-cta');
   const quoteForm = document.getElementById('quoteRequestForm');
   const modalQuoteForm = document.getElementById('modalQuoteForm');
 
@@ -312,7 +245,7 @@ function initQuoteModal() {
   // Prepopulate select element in quoteModal and open it when clicking "Báo giá / Nhận tư vấn"
   quoteBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
-      if (btn.classList.contains('btn-quote') || btn.classList.contains('btn-hero-cta') || btn.classList.contains('btn-nav-cta')) {
+      if (btn.classList.contains('btn-hero-cta')) {
         // Open Modal
         modal.classList.add('active');
         document.body.style.overflow = 'hidden';
@@ -606,15 +539,9 @@ function initScrollAnimations() {
 // Đọc cấu hình từ file config.js (window.APP_CONFIG) hoặc fallback về mặc định
 const APP_CONFIG = window.APP_CONFIG || {};
 
-const SUPABASE_CONFIG = {
-  url: APP_CONFIG.SUPABASE_URL || 'YOUR_SUPABASE_URL',
-  anonKey: APP_CONFIG.SUPABASE_ANON_KEY || 'sb_publishable_yerpn5Zyx1PUBRggKUDWFQ_bEz8MF_F'
-};
-
-const TELEGRAM_CONFIG = {
-  botToken: APP_CONFIG.TELEGRAM_BOT_TOKEN || 'YOUR_TELEGRAM_BOT_TOKEN',
-  chatId: APP_CONFIG.TELEGRAM_CHAT_ID || 'YOUR_TELEGRAM_CHAT_ID'
-};
+// References to modular API services loaded from js/api/ folder
+const sendToSupabase = (data) => window.SupabaseAPI.sendToSupabase(data);
+const sendTelegramAlert = (data) => window.TelegramAPI.sendTelegramAlert(data);
 
 // Danh sách dữ liệu mẫu đá theo không gian (Step 1 -> Step 2)
 const STONE_DATABASE = {
@@ -646,106 +573,10 @@ const STONE_DATABASE = {
   ]
 };
 
-// ==========================================================================
-// DB & API HELPER FUNCTIONS (Supabase & Telegram)
-// ==========================================================================
-
 const validatePhone = (phone) => {
   // VN Phone pattern: 10 digits starting with 03, 05, 07, 08, 09
   const pattern = /^(03|05|07|08|09)\d{8}$/;
   return pattern.test(phone.replace(/\s+/g, ''));
-};
-
-const sendToSupabase = async (data) => {
-  if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || SUPABASE_CONFIG.url.startsWith('YOUR_')) {
-    console.log('Supabase chưa cấu hình. Fallback lưu dữ liệu vào LocalStorage:', data);
-    
-    const existing = JSON.parse(localStorage.getItem('consultation_requests') || '[]');
-    existing.push({
-      ...data,
-      status: 'pending',
-      created_at: new Date().toISOString()
-    });
-    localStorage.setItem('consultation_requests', JSON.stringify(existing));
-    return true;
-  }
-
-  try {
-    const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/consultation_requests`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'apikey': SUPABASE_CONFIG.anonKey,
-        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify({
-        customer_name: data.customer_name,
-        phone_number: data.phone_number,
-        address: data.address,
-        room_region: data.room_region,
-        selected_stone_names: data.selected_stone_names,
-        service_needed: data.service_needed,
-        customer_note: data.customer_note,
-        status: 'pending'
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
-    }
-    return true;
-  } catch (err) {
-    console.warn('Lỗi kết nối Supabase, fallback lưu local:', err);
-    const existing = JSON.parse(localStorage.getItem('consultation_requests') || '[]');
-    existing.push({
-      ...data,
-      status: 'pending',
-      created_at: new Date().toISOString()
-    });
-    localStorage.setItem('consultation_requests', JSON.stringify(existing));
-    return true;
-  }
-};
-
-const sendTelegramAlert = async (data) => {
-  if (!TELEGRAM_CONFIG.botToken || !TELEGRAM_CONFIG.chatId || TELEGRAM_CONFIG.botToken.startsWith('YOUR_')) {
-    console.log('Telegram chưa cấu hình. Tin nhắn gửi đi sẽ có cấu trúc như sau:\n', 
-      `🔔 CÓ YÊU CẦU ĐO ĐẠC / THIẾT KẾ MỚI!\n` +
-      `- Khách hàng: ${data.customer_name} - ${data.phone_number}\n` +
-      `- Địa chỉ: ${data.address}\n` +
-      `- Hạng mục: ${data.room_region}\n` +
-      `- Mẫu đá chọn: ${data.selected_stone_names}\n` +
-      `- Dịch vụ: ${data.service_needed}\n` +
-      `- Ghi chú: ${data.customer_note || 'Không có ghi chú'}`
-    );
-    return;
-  }
-
-  const text = `🔔 *CÓ YÊU CẦU ĐO ĐẠC / THIẾT KẾ MỚI!*\n\n` +
-               `👤 *Khách hàng:* ${data.customer_name}\n` +
-               `📞 *SĐT/Zalo:* ${data.phone_number}\n` +
-               `📍 *Địa chỉ:* ${data.address}\n` +
-               `🏗️ *Hạng mục:* ${data.room_region}\n` +
-               `💎 *Mẫu đá chọn:* ${data.selected_stone_names}\n` +
-               `🛠️ *Dịch vụ:* ${data.service_needed}\n` +
-               `📝 *Ghi chú:* ${data.customer_note || 'Không có ghi chú'}`;
-
-  try {
-    await fetch(`https://api.telegram.org/bot${TELEGRAM_CONFIG.botToken}/sendMessage`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        chat_id: TELEGRAM_CONFIG.chatId,
-        text: text,
-        parse_mode: 'Markdown'
-      })
-    });
-  } catch (err) {
-    console.error('Lỗi khi gửi thông báo Telegram:', err);
-  }
 };
 
 function initConsultationMultiStep() {
@@ -795,12 +626,7 @@ function initConsultationMultiStep() {
     openModal();
   }));
   
-  if (floatingBtn) {
-    floatingBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      openModal();
-    });
-  }
+
 
   // 3. Close Modal Events
   const closeModal = () => {
@@ -1213,29 +1039,8 @@ function normalizeStoneType(stoneType) {
 async function fetchProductsAndInit() {
   window.allProducts = [];
 
-  // Nếu Supabase chưa cấu hình URL, dùng ngay danh sách fallback
-  if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey || SUPABASE_CONFIG.url.startsWith('YOUR_')) {
-    console.log('Supabase URL/Key chưa được cấu hình. Sử dụng danh sách sản phẩm fallback mặc định.');
-    window.allProducts = FALLBACK_PRODUCTS;
-    renderCatalog(window.allProducts);
-    return;
-  }
-
   try {
-    // Kết nối đến bảng product_images như cấu hình trên Supabase của bạn
-    const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/product_images?select=*`, {
-      method: 'GET',
-      headers: {
-        'apikey': SUPABASE_CONFIG.anonKey,
-        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error(`Supabase API response status: ${response.status}`);
-    }
-
-    const data = await response.json();
+    const data = await window.SupabaseAPI.fetchProductsFromSupabase();
     if (data && data.length > 0) {
       // Ánh xạ dữ liệu từ bảng product_images sang định dạng của giao diện Catalog
       window.allProducts = data.map(item => {
@@ -1297,7 +1102,7 @@ function renderCatalog(products) {
         <p class="product-desc">${product.description || 'Sản phẩm gạch đá ốp lát nghệ thuật chất lượng cao, nhập khẩu nguyên khối.'}</p>
         <div class="product-footer">
           <span class="product-spec">${product.price_range || 'Liên hệ báo giá'}</span>
-          <button class="btn-quote">Báo giá &rarr;</button>
+          <a href="https://zalo.me/0833301330" target="_blank" rel="noopener noreferrer" class="btn-quote" style="text-decoration: none;">Báo giá &rarr;</a>
         </div>
       </div>
     `;
@@ -1339,58 +1144,7 @@ function rebindDynamicCatalogEvents() {
     });
   }
 
-  // 2. Re-bind Báo Giá - Mở Multi-step form và chọn sẵn context
-  const quoteBtns = document.querySelectorAll('#catalogProductsGrid .btn-quote');
-  const consultationModal = document.getElementById('consultationModal');
-
-  if (consultationModal && quoteBtns.length > 0) {
-    quoteBtns.forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.preventDefault();
-        
-        // 1. Mở modal Multi-Step Form
-        const openEvent = new Event('click');
-        const openConsultationBtn = document.querySelector('.btn-open-consultation');
-        if (openConsultationBtn) {
-          openConsultationBtn.dispatchEvent(openEvent);
-        } else {
-          consultationModal.classList.add('active');
-          document.body.style.overflow = 'hidden';
-        }
-
-        // 2. Phân tích loại sản phẩm và tự động chọn các bước
-        const card = btn.closest('.product-card');
-        const title = card.querySelector('.product-title').textContent.trim();
-        const stoneType = card.getAttribute('data-category') || 'marble';
-
-        // Ánh xạ từ loại đá sang không gian sử dụng phù hợp nhất
-        let mappedRegion = 'Kitchen'; // Mặc định là bếp
-        if (stoneType === 'marble') mappedRegion = 'Bathroom';
-        else if (stoneType === 'onyx') mappedRegion = 'Living Room & Translucent Stone';
-        else if (stoneType === 'granite') mappedRegion = 'Stairs & Exterior';
-
-        // Giả lập click chọn thẻ không gian ở Bước 1
-        const regionCard = document.querySelector(`.region-card[data-region="${mappedRegion}"]`);
-        if (regionCard) {
-          regionCard.click(); // Card click sẽ tự động chuyển sang Bước 2
-          
-          // Đợi 0.5s để Bước 2 render xong danh sách đá động, tích chọn đá
-          setTimeout(() => {
-            const stoneCards = document.querySelectorAll('.stone-card');
-            stoneCards.forEach(stoneCard => {
-              const stoneName = stoneCard.getAttribute('data-stone-name');
-              if (stoneName && (stoneName.toLowerCase().includes(title.toLowerCase()) || title.toLowerCase().includes(stoneName.toLowerCase()))) {
-                // Chỉ click chọn nếu nó chưa được selected
-                if (!stoneCard.classList.contains('selected')) {
-                  stoneCard.click();
-                }
-              }
-            });
-          }, 500);
-        }
-      });
-    });
-  }
+  // 2. Re-bind Báo Giá (Bypass, card link points to Zalo)
 }
 
 

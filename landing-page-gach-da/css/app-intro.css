@@ -392,6 +392,16 @@
   }
   .app-download-block {
     justify-content: center;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .app-qr-code {
+    display: none !important; /* Hide QR code on mobile/tablet as users cannot scan their own screen */
+  }
+  .app-badges {
+    flex-direction: row;
+    justify-content: center;
+    gap: 16px;
   }
   .app-mockup-wrapper {
     margin-top: 20px;
@@ -408,5 +418,10 @@
   .phone-device-container {
     width: 280px;
     height: 570px;
+  }
+  .app-badges {
+    flex-direction: column;
+    width: 100%;
+    align-items: center;
   }
 }
