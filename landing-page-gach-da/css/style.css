@@ -406,7 +406,6 @@ header.site-header.scrolled {
 [data-theme='light'] .hero-section .hero-description {
   color: #110a04; /* Nâu đen đậm sắc nét */
   font-weight: 450; /* Tăng độ dày nét chữ để không bị nuốt nét trên nền loang lổ */
-  text-shadow: 0 1px 8px rgba(255, 255, 255, 0.9), 0 1px 3px rgba(255, 255, 255, 0.9); /* Quầng sáng kem mịn làm nổi bật chữ trên nền tối */
 }
 
 .hero-content {
@@ -887,6 +886,29 @@ section {
   font-size: 1.25rem;
 }
 
+.lightbox-close {
+  position: fixed !important;
+  top: 30px !important;
+  right: 30px !important;
+  font-size: 1.5rem !important;
+  color: rgba(255, 255, 255, 0.7) !important;
+  z-index: 2600 !important;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.4) !important;
+  border-radius: 50% !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  transition: var(--transition-smooth) !important;
+}
+
+.lightbox-close:hover {
+  color: #ffffff !important;
+  background-color: rgba(0, 0, 0, 0.7) !important;
+  transform: scale(1.1) rotate(90deg) !important;
+}
 
 /* Video Intro Modal Style overrides */
 .video-modal-content {
@@ -908,6 +930,7 @@ section {
 }
 
 .btn-watch-video {
+  display: none;
   gap: 8px;
 }
 
@@ -1132,8 +1155,73 @@ section {
   transform: translateY(0);
 }
 
+/* Hero Video Background for Desktop/Laptop */
+.hero-video-backdrop {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+  display: block;
+}
+
+#hero-bg-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.hero-video-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  transition: var(--transition-smooth);
+}
+
+[data-theme='light'] .hero-video-overlay {
+  background: transparent;
+}
+
+[data-theme='dark'] .hero-video-overlay {
+  background: linear-gradient(
+    105deg,
+    rgba(5, 3, 0, 0.85) 0%,
+    rgba(17, 24, 39, 0.70) 50%,
+    rgba(5, 3, 0, 0.85) 100%
+  );
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .hero-video-overlay {
+    background: linear-gradient(
+      105deg,
+      rgba(5, 3, 0, 0.85) 0%,
+      rgba(17, 24, 39, 0.70) 50%,
+      rgba(5, 3, 0, 0.85) 100%
+    );
+  }
+}
+
+.hero-section .container {
+  position: relative;
+  z-index: 3;
+}
+
 /* Responsive Breakpoints */
+.mobile-cta-item {
+  display: none;
+}
+
+/* Modal Content Height Cap & Scroll for Mobile / Short viewports */
+.modal-content {
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
 @media (max-width: 1024px) {
+  .hero-video-backdrop {
+    display: none;
+  }
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);
   }
@@ -1147,18 +1235,17 @@ section {
   .footer-top {
     grid-template-columns: repeat(2, 1fr);
   }
-}
 
-@media (max-width: 768px) {
+  /* Hamburger Menu activated for all tablets (<=1024px) */
   .mobile-menu-toggle {
     display: block;
   }
   .nav-menu {
-    position: fixed;
-    top: var(--header-height);
+    position: absolute;
+    top: 100%;
     left: 0;
     width: 100%;
-    height: calc(100vh - var(--header-height));
+    height: calc(100vh - 100%);
     background-color: var(--bg-secondary);
     flex-direction: column;
     padding: 60px 40px;
@@ -1171,6 +1258,28 @@ section {
 
   .nav-menu.active {
     transform: translateX(0);
+  }
+
+  /* Hide Desktop CTA in header on tablet/mobile */
+  .btn-nav-cta {
+    display: none;
+  }
+
+  /* Show Mobile CTA in menu */
+  .mobile-cta-item {
+    display: block;
+    width: 100%;
+  }
+
+  /* Show watch video button only on tablet/mobile */
+  .btn-watch-video {
+    display: inline-flex;
+  }
+}
+
+@media (max-width: 768px) {
+  section {
+    padding: 60px 0;
   }
 
   .hero-title {
@@ -1188,6 +1297,81 @@ section {
   .footer-bottom {
     flex-direction: column-reverse;
     text-align: center;
+  }
+
+  .consultation-modal .modal-content {
+    padding: 24px 20px 20px 20px;
+  }
+
+  .progress-step .step-label {
+    font-size: 0.65rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .logo-link {
+    font-size: 1.2rem;
+  }
+
+  .logo-link svg {
+    width: 28px;
+    height: 28px;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .hero-buttons .btn {
+    width: 100%;
+  }
+
+  .newsletter-form {
+    flex-direction: column;
+    width: 100%;
+    gap: 12px;
+  }
+
+  .newsletter-input {
+    width: 100%;
+  }
+
+  .newsletter-form .btn {
+    width: 100%;
+  }
+
+  .floating-cta-btn {
+    bottom: 20px;
+    right: 20px;
+    padding: 12px;
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    justify-content: center;
+  }
+
+  .floating-cta-btn span {
+    display: none; /* Hide text on small mobile screens */
+  }
+
+  .floating-cta-btn svg {
+    margin: 0;
+    width: 20px;
+    height: 20px;
+  }
+
+  .contact-form-card {
+    padding: 24px 20px;
+  }
+
+  .modal-content {
+    padding: 24px 20px;
+  }
+
+  .region-grid {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

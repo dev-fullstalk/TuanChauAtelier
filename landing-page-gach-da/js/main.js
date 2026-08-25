@@ -33,12 +33,40 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 800);
       };
       
-      // Auto close after 4.5 seconds (4500ms) to enjoy the video backdrop
-      const autoCloseTimeout = setTimeout(dismissIntro, 4500);
+      const introVid = document.getElementById('intro-video');
+      let fallbackTimeout;
+
+      if (introVid) {
+        // Ensure loop is false so ended event can fire
+        introVid.loop = false;
+        
+        // When video ends, dismiss intro screen
+        introVid.addEventListener('ended', dismissIntro);
+        
+        // Safety fallback of 15 seconds in case autoplay is blocked or video fails to load
+        fallbackTimeout = setTimeout(dismissIntro, 15000);
+        
+        // Clear safety timeout if ended fires first
+        introVid.addEventListener('ended', () => {
+          clearTimeout(fallbackTimeout);
+        });
+
+        // Play explicitly and handle mobile autoplay block cases
+        introVid.play().catch(error => {
+          console.warn("Autoplay was prevented by browser policy, bypassing intro screen:", error);
+          clearTimeout(fallbackTimeout);
+          dismissIntro();
+        });
+      } else {
+        // Fallback if no video element
+        fallbackTimeout = setTimeout(dismissIntro, 4500);
+      }
       
       if (skipIntroBtn) {
         skipIntroBtn.addEventListener('click', () => {
-          clearTimeout(autoCloseTimeout);
+          if (fallbackTimeout) {
+            clearTimeout(fallbackTimeout);
+          }
           dismissIntro();
         });
       }
@@ -147,16 +175,27 @@ function initMobileMenu() {
   if (!toggleBtn || !navMenu) return;
 
   toggleBtn.addEventListener('click', () => {
-    navMenu.classList.toggle('active');
+    const isActive = navMenu.classList.toggle('active');
     toggleBtn.classList.toggle('active');
+    document.body.style.overflow = isActive ? 'hidden' : '';
   });
 
-  // Close menu when clicking nav link
-  document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', () => {
+  // Close menu when clicking nav links or buttons inside the menu
+  navMenu.querySelectorAll('.nav-link, .btn').forEach(elem => {
+    elem.addEventListener('click', () => {
       navMenu.classList.remove('active');
       toggleBtn.classList.remove('active');
+      document.body.style.overflow = '';
     });
+  });
+
+  // Close menu when clicking outside
+  document.addEventListener('click', (e) => {
+    if (navMenu.classList.contains('active') && !navMenu.contains(e.target) && !toggleBtn.contains(e.target)) {
+      navMenu.classList.remove('active');
+      toggleBtn.classList.remove('active');
+      document.body.style.overflow = '';
+    }
   });
 }
 
@@ -246,7 +285,10 @@ function initLightbox() {
 
   if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
   lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) closeLightbox();
+    // Đóng lightbox khi click vào bất kỳ vùng nào không phải là thẻ IMG
+    if (e.target.tagName !== 'IMG') {
+      closeLightbox();
+    }
   });
 
   // ESC Key listener to dismiss
@@ -1180,7 +1222,8 @@ async function fetchProductsAndInit() {
   }
 
   try {
-    const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/products?select=*`, {
+    // Kết nối đến bảng product_images như cấu hình trên Supabase của bạn
+    const response = await fetch(`${SUPABASE_CONFIG.url}/rest/v1/product_images?select=*`, {
       method: 'GET',
       headers: {
         'apikey': SUPABASE_CONFIG.anonKey,
@@ -1194,21 +1237,26 @@ async function fetchProductsAndInit() {
 
     const data = await response.json();
     if (data && data.length > 0) {
-      // Chuẩn hóa trường stone_type từ tiếng Việt sang tiếng Anh lowercase để khớp bộ lọc
-      window.allProducts = data.map(product => {
-        const typeNormalized = normalizeStoneType(product.stone_type);
+      // Ánh xạ dữ liệu từ bảng product_images sang định dạng của giao diện Catalog
+      window.allProducts = data.map(item => {
+        const typeNormalized = normalizeStoneType(item.category);
         return {
-          ...product,
-          stone_type: typeNormalized
+          id: item.id,
+          name: item.name,
+          stone_type: typeNormalized,
+          thumbnail_url: item.image_url,
+          price_range: `Dày: ${item.thickness || '20mm'} | ${item.finish || 'Polished'}`,
+          description: item.description,
+          is_translucent: (item.category || '').toLowerCase().includes('xuyên sáng')
         };
       });
-      console.log('Đã tải thành công danh sách sản phẩm từ Supabase:', window.allProducts);
+      console.log('Đã tải thành công danh sách sản phẩm từ Supabase (product_images):', window.allProducts);
     } else {
-      console.log('Bảng products trên Supabase trống. Tải sản phẩm fallback.');
+      console.log('Bảng product_images trên Supabase trống hoặc bị chặn RLS. Tải sản phẩm fallback.');
       window.allProducts = FALLBACK_PRODUCTS;
     }
   } catch (err) {
-    console.warn('Lỗi kết nối database Supabase. Tự động chuyển sang sản phẩm dự phòng:', err);
+    console.warn('Lỗi kết nối database Supabase product_images. Tự động chuyển sang sản phẩm dự phòng:', err);
     window.allProducts = FALLBACK_PRODUCTS;
   } finally {
     renderCatalog(window.allProducts);
