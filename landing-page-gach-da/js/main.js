@@ -54,6 +54,7 @@ function initializeInteractions() {
   initScrollAnimations();
   initConsultationMultiStep(); // Initialize Multi-Step Consultation Form
   initVideoModal(); // Initialize interactive Video Modal
+  initAccordionGallery(); // Khởi tạo Accordion Gallery cho Bộ sưu tập
   fetchProductsAndInit(); // Tải dữ liệu sản phẩm động từ Supabase
   
   // Custom Hook for App intro interactions since it's loaded
@@ -1092,9 +1093,6 @@ function renderCatalog(products) {
     card.innerHTML = `
       <div class="product-img-wrapper">
         <img src="${product.thumbnail_url || 'assets/images/stone_carrara.jpg'}" alt="${product.name}" class="product-img">
-        <div class="product-overlay">
-          <button class="btn-view-texture" aria-label="Xem chi tiết vân đá">🔍</button>
-        </div>
       </div>
       <div class="product-info">
         <span class="product-category">${categoryLabel}</span>
@@ -1120,20 +1118,16 @@ function rebindDynamicCatalogEvents() {
   const lightbox = document.getElementById('lightboxModal');
   const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
   const lightboxTitle = lightbox ? lightbox.querySelector('.lightbox-title') : null;
-  const viewBtns = document.querySelectorAll('#catalogProductsGrid .btn-view-texture');
-  const closeBtn = lightbox ? lightbox.querySelector('.lightbox-close') : null;
+  const productImgs = document.querySelectorAll('#catalogProductsGrid .product-img');
 
-  if (lightbox && lightboxImg && viewBtns.length > 0) {
-    viewBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-        const card = btn.closest('.product-card');
-        const img = card.querySelector('.product-img');
-        const title = card.querySelector('.product-title');
+  if (lightbox && lightboxImg && productImgs.length > 0) {
+    productImgs.forEach(img => {
+      img.addEventListener('click', () => {
+        const card = img.closest('.product-card');
+        const title = card ? card.querySelector('.product-title') : null;
 
-        if (img) {
-          lightboxImg.src = img.src;
-          lightboxImg.alt = img.alt || '';
-        }
+        lightboxImg.src = img.src;
+        lightboxImg.alt = img.alt || '';
         if (title && lightboxTitle) {
           lightboxTitle.textContent = title.textContent;
         }
@@ -1145,6 +1139,36 @@ function rebindDynamicCatalogEvents() {
   }
 
   // 2. Re-bind Báo Giá (Bypass, card link points to Zalo)
+}
+
+// 14. Horizontal Expanding Accordion Gallery
+function initAccordionGallery() {
+  const cards = document.querySelectorAll('.accordion-card');
+  if (cards.length === 0) return;
+
+  cards.forEach(card => {
+    // Hover event for desktop
+    card.addEventListener('mouseenter', () => {
+      if (window.innerWidth > 768) {
+        setActiveCard(card);
+      }
+    });
+
+    // Click/Touch event for mobile and fallback
+    card.addEventListener('click', () => {
+      setActiveCard(card);
+    });
+  });
+
+  function setActiveCard(activeCard) {
+    cards.forEach(c => {
+      if (c === activeCard) {
+        c.classList.add('active');
+      } else {
+        c.classList.remove('active');
+      }
+    });
+  }
 }
 
 

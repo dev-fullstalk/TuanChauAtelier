@@ -81,7 +81,7 @@
         <span class="hero-subtitle">Nhà điêu khắc không gian</span>
         <h1 class="hero-title">Độc Bản Đá Tự Nhiên & Gạch Cao Cấp</h1>
         <p class="hero-description">
-          Khám phá bộ sưu tập gạch ốp lát nghệ thuật và các slab đá tự nhiên nhập khẩu thượng hạng. Nơi hội tụ tinh hoa kiến trúc và kỹ nghệ chế tác đá đỉnh cao từ Italy, Tây Ban Nha.
+          Tinh hoa gạch nghệ thuật & slab đá tự nhiên nhập khẩu từ Italy và Tây Ban Nha.
         </p>
         <div class="hero-buttons">
           <button class="btn btn-primary btn-open-consultation">Nhận Tư Vấn & Khảo Sát</button>
@@ -146,22 +146,71 @@
         <p class="section-desc">Tinh tuyển những mẫu gạch đá có đường vân sắc nét, thích hợp cho ốp vách tivi, bàn bếp, đảo và lót sàn phòng khách.</p>
       </div>
 
-      <!-- Filters -->
-      <div class="portfolio-filters">
-        <button class="filter-btn active" data-filter="all">Tất cả</button>
-        <button class="filter-btn" data-filter="marble">Đá Marble</button>
-        <button class="filter-btn" data-filter="granite">Đá Granite</button>
-        <button class="filter-btn" data-filter="terrazzo">Terrazzo & Khác</button>
-      </div>
-
-      <!-- Products Grid -->
-      <!-- Products Grid (Dynamic Content from Supabase) -->
-      <div class="products-grid" id="catalogProductsGrid">
-        <div class="loading-catalog" style="grid-column: 1 / -1; text-align: center; padding: 40px 0; color: var(--text-secondary); font-family: var(--font-sans);">
-          <div class="spinner" style="width: 30px; height: 30px; border: 2px solid var(--accent-gold); border-top-color: transparent; border-radius: 50%; margin: 0 auto 12px auto; animation: rotateSuccess 1s infinite linear;"></div>
-          <span>Đang tải các tác phẩm nghệ thuật từ bộ sưu tập...</span>
+      <!-- Horizontal Expanding Accordion Gallery -->
+      <div class="accordion-gallery">
+        <div class="accordion-container">
+          <!-- Card 1: Carrara White Marble -->
+          <div class="accordion-card active" style="background-image: url('assets/images/stone_carrara.jpg');" data-index="0">
+            <div class="card-overlay"></div>
+            <div class="collapsed-title">White Carrara</div>
+            <div class="expanded-content">
+              <span class="card-subtitle">Đá Marble Tự Nhiên (Italy)</span>
+              <h3 class="card-title">White Carrara</h3>
+              <p class="card-desc">Vân mây xám nhẹ nhàng tinh tế trên nền tuyết trắng, biểu tượng cổ điển từ các mỏ đá Carrara, Tuscany nước Ý.</p>
+              <a href="https://zalo.me/0833301330" target="_blank" rel="noopener noreferrer" class="btn btn-primary card-cta">Liên hệ báo giá</a>
+            </div>
+          </div>
+          
+          <!-- Card 2: Patagonia Quartzite -->
+          <div class="accordion-card" style="background-image: url('assets/images/stone_patagonia.jpg');" data-index="1">
+            <div class="card-overlay"></div>
+            <div class="collapsed-title">Patagonia Quartz</div>
+            <div class="expanded-content">
+              <span class="card-subtitle">Đá Thạch Anh Cao Cấp (Brazil)</span>
+              <h3 class="card-title">Patagonia Quartz</h3>
+              <p class="card-desc">Tác phẩm nghệ thuật hoang dã của tự nhiên, kết hợp giữa thạch anh xuyên sáng kỳ vĩ và vân nham thạch mạnh mẽ.</p>
+              <a href="https://zalo.me/0833301330" target="_blank" rel="noopener noreferrer" class="btn btn-primary card-cta">Liên hệ báo giá</a>
+            </div>
+          </div>
+          
+          <!-- Card 3: Nero Marquina Gold -->
+          <div class="accordion-card" style="background-image: url('assets/images/stone_nero.jpg');" data-index="2">
+            <div class="card-overlay"></div>
+            <div class="collapsed-title">Nero Marquina</div>
+            <div class="expanded-content">
+              <span class="card-subtitle">Đá Marble Tây Ban Nha</span>
+              <h3 class="card-title">Nero Marquina Gold</h3>
+              <p class="card-desc">Nền đen huyền bí Nero Marquina điểm xuyết bởi các chỉ trắng mảnh và những đường vân vàng đồng vương giả.</p>
+              <a href="https://zalo.me/0833301330" target="_blank" rel="noopener noreferrer" class="btn btn-primary card-cta">Liên hệ báo giá</a>
+            </div>
+          </div>
+          
+          <!-- Card 4: Royal Onyx Backlit -->
+          <div class="accordion-card" style="background-image: url('assets/images/stone_onyx.jpg');" data-index="3">
+            <div class="card-overlay"></div>
+            <div class="collapsed-title">Royal Onyx</div>
+            <div class="expanded-content">
+              <span class="card-subtitle">Đá Ngọc Xuyên Sáng (Iran)</span>
+              <h3 class="card-title">Royal Onyx</h3>
+              <p class="card-desc">Vân ngọc mềm mại xếp lớp song song với khả năng xuyên sáng 100%, đem lại năng lượng ấm cúng và vượng khí.</p>
+              <a href="https://zalo.me/0833301330" target="_blank" rel="noopener noreferrer" class="btn btn-primary card-cta">Liên hệ báo giá</a>
+            </div>
+          </div>
+          
+          <!-- Card 5: Palladiana Terrazzo -->
+          <div class="accordion-card" style="background-image: url('assets/images/stone_terrazzo.jpg');" data-index="4">
+            <div class="card-overlay"></div>
+            <div class="collapsed-title">Palladiana Terrazzo</div>
+            <div class="expanded-content">
+              <span class="card-subtitle">Terrazzo Nghệ Thuật (Italy)</span>
+              <h3 class="card-title">Palladiana Terrazzo</h3>
+              <p class="card-desc">Kỹ nghệ kết tụ các hạt đá marble cẩm thạch trắng lớn trên nền xi măng xám nhạt, phong cách phục hưng cổ kính.</p>
+              <a href="https://zalo.me/0833301330" target="_blank" rel="noopener noreferrer" class="btn btn-primary card-cta">Liên hệ báo giá</a>
+            </div>
+          </div>
         </div>
       </div>
+
     </div>
   </section>
 
