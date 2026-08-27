@@ -2,3 +2,4 @@ landing-page-gach-da/.env
 landing-page-gach-da/js/config.js
 node_modules/
 .DS_Store
+.env
