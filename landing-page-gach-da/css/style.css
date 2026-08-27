@@ -462,74 +462,77 @@ header.site-header.scrolled {
 }
 
 /* ==========================================================================
-   Desktop-Only Overrides for Video Background (min-width: 1025px)
-   This ensures high contrast/readability of white text on the moving video,
-   while keeping the video background 100% visible (no opaque cards).
+   Hero Section High Contrast Styles for Video Background
+   This ensures high contrast/readability of white text on the moving video
+   across both desktop and mobile viewports.
    ========================================================================== */
-@media (min-width: 1025px) {
-  /* Force dark cinema-style overlay on desktop video backdrop */
-  .hero-video-overlay {
-    background: rgba(0, 0, 0, 0.32) !important;
-  }
+/* Force dark cinema-style gradient overlay on video backdrop */
+.hero-video-overlay {
+  background: linear-gradient(
+    to bottom,
+    rgba(9, 13, 22, 0.45) 0%,
+    rgba(9, 13, 22, 0.25) 50%,
+    rgba(9, 13, 22, 0.60) 100%
+  ) !important;
+}
 
-  /* Make hero section colors bright/gold on the dark video overlay */
-  .hero-section {
-    color: #ffffff !important;
-  }
-  
-  [data-theme='light'] .hero-section {
-    color: #ffffff !important;
-  }
+/* Make hero section colors bright/gold on the dark video overlay */
+.hero-section {
+  color: #ffffff !important;
+}
 
-  .hero-section .hero-title {
-    color: #ffffff !important;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
-  }
+[data-theme='light'] .hero-section {
+  color: #ffffff !important;
+}
 
-  .hero-section .hero-subtitle {
-    color: var(--accent-gold) !important;
-    text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
-  }
+.hero-section .hero-title {
+  color: #ffffff !important;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+}
 
-  [data-theme='light'] .hero-section .hero-subtitle {
-    color: var(--accent-gold) !important;
-  }
+.hero-section .hero-subtitle {
+  color: var(--accent-gold) !important;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+}
 
-  .hero-section .hero-description {
-    color: rgba(255, 255, 255, 0.88) !important;
-    font-weight: 300 !important;
-    text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
-  }
+[data-theme='light'] .hero-section .hero-subtitle {
+  color: var(--accent-gold) !important;
+}
 
-  [data-theme='light'] .hero-section .hero-description {
-    color: rgba(255, 255, 255, 0.88) !important;
-    font-weight: 300 !important;
-  }
+.hero-section .hero-description {
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-weight: 300 !important;
+  text-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+}
 
-  /* Optimize button contrast on the dark video background */
-  .hero-section .btn-primary {
-    background-color: var(--accent-gold) !important;
-    color: #110a04 !important;
-    border: 1px solid var(--accent-gold) !important;
-  }
+[data-theme='light'] .hero-section .hero-description {
+  color: rgba(255, 255, 255, 0.88) !important;
+  font-weight: 300 !important;
+}
 
-  .hero-section .btn-primary:hover {
-    background-color: #110a04 !important;
-    color: var(--accent-gold) !important;
-    border-color: var(--accent-gold) !important;
-    box-shadow: 0 6px 20px var(--shadow-glow) !important;
-  }
+/* Optimize button contrast on the dark video background */
+.hero-section .btn-primary {
+  background-color: var(--accent-gold) !important;
+  color: #110a04 !important;
+  border: 1px solid var(--accent-gold) !important;
+}
 
-  .hero-section .btn-secondary {
-    color: #ffffff !important;
-    border: 1px solid rgba(255, 255, 255, 0.5) !important;
-  }
+.hero-section .btn-primary:hover {
+  background-color: #110a04 !important;
+  color: var(--accent-gold) !important;
+  border-color: var(--accent-gold) !important;
+  box-shadow: 0 6px 20px var(--shadow-glow) !important;
+}
 
-  .hero-section .btn-secondary:hover {
-    background-color: #ffffff !important;
-    color: #110a04 !important;
-    border-color: #ffffff !important;
-  }
+.hero-section .btn-secondary {
+  color: #ffffff !important;
+  border: 1px solid rgba(255, 255, 255, 0.5) !important;
+}
+
+.hero-section .btn-secondary:hover {
+  background-color: #ffffff !important;
+  color: #110a04 !important;
+  border-color: #ffffff !important;
 }
 
 .hero-buttons {
@@ -1185,7 +1188,7 @@ section {
   transform: translateY(0);
 }
 
-/* Hero Video Background for Desktop/Laptop */
+/* Hero Video Background */
 .hero-video-backdrop {
   position: absolute;
   inset: 0;
@@ -1194,11 +1197,20 @@ section {
   display: block;
 }
 
-#hero-bg-video {
+#hero-bg-video,
+#hero-bg-video-mobile {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+}
+
+.desktop-video {
+  display: block;
+}
+
+.mobile-video {
+  display: none;
 }
 
 .hero-video-overlay {
@@ -1249,8 +1261,11 @@ section {
 }
 
 @media (max-width: 1024px) {
-  .hero-video-backdrop {
-    display: none;
+  .desktop-video {
+    display: none !important;
+  }
+  .mobile-video {
+    display: block !important;
   }
   .categories-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1399,6 +1414,24 @@ section {
 }
 
 @media (max-width: 480px) {
+  .hero-title {
+    font-size: clamp(1.8rem, 8.5vw, 2.3rem) !important;
+    line-height: 1.25 !important;
+    margin-bottom: 12px !important;
+  }
+
+  .hero-subtitle {
+    font-size: 0.8rem !important;
+    letter-spacing: 3px !important;
+    margin-bottom: 8px !important;
+  }
+
+  .hero-description {
+    font-size: 0.95rem !important;
+    line-height: 1.55 !important;
+    margin-bottom: 24px !important;
+  }
+
   .logo-link {
     font-size: 1.2rem;
   }
