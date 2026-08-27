@@ -1339,6 +1339,10 @@ section {
     padding: 60px 0;
   }
 
+  .btn-watch-video {
+    display: none !important;
+  }
+
   .hero-content {
     text-align: center;
     margin: 0 auto;
