@@ -8,9 +8,12 @@
   <meta name="author" content="Tuan Chau Atelier">
   <title>Tuan Chau Atelier | Gạch Ốp Lát & Đá Tự Nhiên Cao Cấp</title>
 
-  <!-- Prevent theme flash (FOUC) script -->
+  <!-- Prevent theme flash (FOUC) & Fix Directory URL Trailing Slash -->
   <meta name="color-scheme" content="light dark">
   <script>
+    if (window.location.pathname.endsWith('/landing-page-gach-da')) {
+      window.location.replace(window.location.pathname + '/' + window.location.hash);
+    }
     {
       const colorScheme = localStorage.getItem('color-scheme');
       if (colorScheme) {
@@ -111,33 +114,35 @@
         <p class="section-desc">Chúng tôi mang đến các dòng sản phẩm đa dạng, đáp ứng mọi quy chuẩn kỹ thuật và tính thẩm mỹ khắt khe nhất.</p>
       </div>
       <div class="categories-grid">
-        <!-- Category Card 1 -->
-        <div class="category-card">
+        <!-- Category Card 1: Gạch Ốp Lát Art -->
+        <a href="gach-art.html" class="category-card" aria-label="Xem danh mục Gạch Ốp Lát Art">
           <svg class="category-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6A2.25 2.25 0 016 3.75h2.25A2.25 2.25 0 0110.5 6v2.25a2.25 2.25 0 01-2.25 2.25H6a2.25 2.25 0 01-2.25-2.25V6zM3.75 15.75A2.25 2.25 0 016 13.5h2.25a2.25 2.25 0 012.25 2.25V18a2.25 2.25 0 01-2.25 2.25H6A2.25 2.25 0 013.75 18v-2.25zM13.5 6a2.25 2.25 0 012.25-2.25H18A2.25 2.25 0 0120.25 6v2.25A2.25 2.25 0 0118 10.5h-2.25a2.25 2.25 0 01-2.25-2.25V6zM13.5 15.75a2.25 2.25 0 012.25-2.25H18a2.25 2.25 0 012.25 2.25V18A2.25 2.25 0 0118 20.25h-2.25A2.25 2.25 0 0113.5 18v-2.25z"/>
           </svg>
           <h3>Gạch Ốp Lát Art</h3>
           <p>Dòng gạch ceramic, porcelain họa tiết nghệ thuật mang hơi thở châu Âu cổ kính và tinh tế.</p>
-          <a href="gach-art.html" class="category-link">Tìm hiểu thêm &rarr;</a>
-        </div>
-        <!-- Category Card 2 -->
-        <div class="category-card">
+          <span class="category-link">Tìm hiểu thêm &rarr;</span>
+        </a>
+
+        <!-- Category Card 2: Đá Tự Nhiên Marble & Granite -->
+        <a href="da-tu-nhien.html" class="category-card" aria-label="Xem danh mục Đá Tự Nhiên Marble & Granite">
           <svg class="category-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12 21a9.004 9.004 0 008.716-6.747M12 21a9.004 9.004 0 01-8.716-6.747M12 21c2.485 0 4.5-4.03 4.5-9S14.485 3 12 3m0 18c-2.485 0-4.5-4.03-4.5-9S9.515 3 12 3m0 0a8.997 8.997 0 017.843 4.582M12 3a8.997 8.997 0 00-7.843 4.582m15.686 0A11.953 11.953 0 0112 10.5c-2.998 0-5.74-1.1-7.843-2.918m15.686 0A8.959 8.959 0 0121 12c0 .778-.099 1.533-.284 2.253m0 0A17.919 17.919 0 0112 16.5c-3.162 0-6.133-.815-8.716-2.247m0 0A9.015 9.015 0 013 12c0-.778.099-1.533.284-2.253"/>
           </svg>
           <h3>Đá Tự Nhiên Marble & Granite</h3>
           <p>Những tác phẩm độc bản của tự nhiên được khai thác nguyên khối từ các mỏ đá Italy, Brazil.</p>
-          <a href="da-tu-nhien.html" class="category-link">Tìm hiểu thêm &rarr;</a>
-        </div>
-        <!-- Category Card 3 -->
-        <div class="category-card">
+          <span class="category-link">Tìm hiểu thêm &rarr;</span>
+        </a>
+
+        <!-- Category Card 3: Đá Nhân Tạo Cao Cấp -->
+        <a href="da-nhan-tao.html" class="category-card" aria-label="Xem danh mục Đá Nhân Tạo Cao Cấp">
           <svg class="category-icon" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122l.75-2.524a1.125 1.125 0 01.896-.786l2.524-.375a1.125 1.125 0 011.083 1.083l-.375 2.524a1.125 1.125 0 01-.786.896l-2.524.75a1.125 1.125 0 01-1.083-1.083zM18.75 21a2.25 2.25 0 002.25-2.25v-9A2.25 2.25 0 0018.75 7.5h-9a2.25 2.25 0 00-2.25 2.25v9a2.25 2.25 0 002.25 2.25h9z"/>
           </svg>
           <h3>Đá Nhân Tạo Cao Cấp</h3>
           <p>Đá thạch anh engineered quartz kết cấu vững chắc, đa dạng họa tiết vân độc đáo và sang trọng.</p>
-          <a href="da-nhan-tao.html" class="category-link">Tìm hiểu thêm &rarr;</a>
-        </div>
+          <span class="category-link">Tìm hiểu thêm &rarr;</span>
+        </a>
       </div>
     </div>
   </section>
@@ -155,7 +160,7 @@
       <div class="accordion-gallery">
         <div class="accordion-container">
           <!-- Card 1: Carrara White Marble -->
-          <div class="accordion-card active" style="background-image: url('assets/images/stone_carrara.jpg');" data-index="0">
+          <div class="accordion-card active" style="background-image: url('assets/images/da_tu_nhien/stone_carrara.jpg');" data-index="0">
             <div class="card-overlay"></div>
             <div class="collapsed-title">White Carrara</div>
             <div class="expanded-content">
@@ -167,7 +172,7 @@
           </div>
           
           <!-- Card 2: Patagonia Quartzite -->
-          <div class="accordion-card" style="background-image: url('assets/images/stone_patagonia.jpg');" data-index="1">
+          <div class="accordion-card" style="background-image: url('assets/images/da_tu_nhien/stone_patagonia.jpg');" data-index="1">
             <div class="card-overlay"></div>
             <div class="collapsed-title">Patagonia Quartz</div>
             <div class="expanded-content">
@@ -179,7 +184,7 @@
           </div>
           
           <!-- Card 3: Nero Marquina Gold -->
-          <div class="accordion-card" style="background-image: url('assets/images/stone_nero.jpg');" data-index="2">
+          <div class="accordion-card" style="background-image: url('assets/images/da_tu_nhien/stone_nero.jpg');" data-index="2">
             <div class="card-overlay"></div>
             <div class="collapsed-title">Nero Marquina</div>
             <div class="expanded-content">
@@ -191,7 +196,7 @@
           </div>
           
           <!-- Card 4: Royal Onyx Backlit -->
-          <div class="accordion-card" style="background-image: url('assets/images/stone_onyx.jpg');" data-index="3">
+          <div class="accordion-card" style="background-image: url('assets/images/da_tu_nhien/stone_onyx.jpg');" data-index="3">
             <div class="card-overlay"></div>
             <div class="collapsed-title">Royal Onyx</div>
             <div class="expanded-content">
@@ -203,7 +208,7 @@
           </div>
           
           <!-- Card 5: Palladiana Terrazzo -->
-          <div class="accordion-card" style="background-image: url('assets/images/stone_terrazzo.jpg');" data-index="4">
+          <div class="accordion-card" style="background-image: url('assets/images/da_tu_nhien/stone_terrazzo.jpg');" data-index="4">
             <div class="card-overlay"></div>
             <div class="collapsed-title">Palladiana Terrazzo</div>
             <div class="expanded-content">
@@ -328,9 +333,9 @@
               <div class="app-tile-selector">
                 <span class="app-selector-title">Chọn vật liệu thử (AR)</span>
                 <div class="app-tile-row">
-                  <img src="assets/images/stone_carrara.jpg" alt="Carrara" class="app-tile-thumb active" data-stone="carrara">
-                  <img src="assets/images/stone_nero.jpg" alt="Nero" class="app-tile-thumb" data-stone="nero">
-                  <img src="assets/images/stone_terrazzo.jpg" alt="Terrazzo" class="app-tile-thumb" data-stone="terrazzo">
+                  <img src="assets/images/da_tu_nhien/stone_carrara.jpg" alt="Carrara" class="app-tile-thumb active" data-stone="carrara">
+                  <img src="assets/images/da_tu_nhien/stone_nero.jpg" alt="Nero" class="app-tile-thumb" data-stone="nero">
+                  <img src="assets/images/da_tu_nhien/stone_terrazzo.jpg" alt="Terrazzo" class="app-tile-thumb" data-stone="terrazzo">
                 </div>
               </div>
             </div>

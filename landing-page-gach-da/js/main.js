@@ -547,30 +547,30 @@ const sendTelegramAlert = (data) => window.TelegramAPI.sendTelegramAlert(data);
 // Danh sách dữ liệu mẫu đá theo không gian (Step 1 -> Step 2)
 const STONE_DATABASE = {
   "Kitchen": [
-    { name: "Đá Quartz Trắng Vân Calacatta", code: "QZ-801", thumb: "assets/images/stone_carrara.jpg" },
-    { name: "Đá Granite Nero Marquina Gold", code: "GR-202", thumb: "assets/images/stone_nero.jpg" },
-    { name: "Đá Thạch Anh Nhân Tạo Xám Nhẹ", code: "QZ-105", thumb: "assets/images/stone_terrazzo.jpg" }
+    { name: "Đá Calacatta Gold Engineered Quartz", code: "QZ-801", thumb: "assets/images/da_nhan_tao/quartz_calacatta_lux.jpg" },
+    { name: "Đá Nero Storm Lightning Quartz", code: "QZ-802", thumb: "assets/images/da_nhan_tao/quartz_nero_storm.jpg" },
+    { name: "Đá Pure White Crystal Quartz", code: "QZ-803", thumb: "assets/images/da_nhan_tao/quartz_pure_crystal.jpg" }
   ],
   "Bathroom": [
-    { name: "Đá Marble Trắng Carrara Ý", code: "MB-101", thumb: "assets/images/stone_carrara.jpg" },
-    { name: "Đá Granite Đen Nero Marquina", code: "GR-202", thumb: "assets/images/stone_nero.jpg" },
-    { name: "Đá Marble Vân Mây Thượng Hạng", code: "MB-104", thumb: "assets/images/stone_terrazzo.jpg" }
+    { name: "Đá Marble Trắng Carrara Ý", code: "MB-101", thumb: "assets/images/da_tu_nhien/stone_carrara.jpg" },
+    { name: "Gạch Men Rạn Emerald Handmade", code: "TL-102", thumb: "assets/images/gach_art/tile_emerald_glaze.jpg" },
+    { name: "Gạch Zellige Ánh Ngọc Champagne", code: "TL-103", thumb: "assets/images/gach_art/tile_zellige_pearl.jpg" }
   ],
   "Living Room & Translucent Stone": [
-    { name: "Tranh đá Onyx Xuyên Sáng Gold", code: "OX-301", thumb: "assets/images/stone_terrazzo.jpg" },
-    { name: "Tranh đá Onyx Ngọc Xanh Xuyên Sáng", code: "OX-302", thumb: "assets/images/stone_carrara.jpg" },
-    { name: "Đá Marble Calacatta Gold Vương Giả", code: "MB-102", thumb: "assets/images/stone_nero.jpg" }
+    { name: "Tranh đá Onyx Xuyên Sáng Gold Iran", code: "OX-301", thumb: "assets/images/da_tu_nhien/stone_royal_onyx_backlit.jpg" },
+    { name: "Đá Marble Calacatta Gold Vương Giả", code: "MB-102", thumb: "assets/images/da_tu_nhien/stone_calacatta_gold.jpg" },
+    { name: "Đá Thạch Anh Patagonia Brazil", code: "QZ-303", thumb: "assets/images/da_tu_nhien/stone_patagonia.jpg" }
   ],
   "Stairs & Exterior": [
-    { name: "Đá Granite Đen Kim Sa Trung", code: "GR-201", thumb: "assets/images/stone_nero.jpg" },
-    { name: "Đá Granite Vàng Solarius Brazil", code: "GR-205", thumb: "assets/images/stone_terrazzo.jpg" },
-    { name: "Đá Granite Đỏ Bình Định", code: "GR-207", thumb: "assets/images/stone_carrara.jpg" }
+    { name: "Đá Marble Đen Spanish Nero Marquina", code: "MB-201", thumb: "assets/images/da_tu_nhien/stone_nero_natural.jpg" },
+    { name: "Đá Granite Verde Alpi Xanh Ngọc", code: "GR-205", thumb: "assets/images/da_tu_nhien/stone_verde_emerald.jpg" },
+    { name: "Gạch Palladiana Terrazzo Ý", code: "TL-204", thumb: "assets/images/gach_art/tile_terrazzo_art.jpg" }
   ],
   "Full House": [
-    { name: "Đá Marble Trắng Carrara Ý", code: "MB-101", thumb: "assets/images/stone_carrara.jpg" },
-    { name: "Đá Granite Nero Marquina Gold", code: "GR-202", thumb: "assets/images/stone_nero.jpg" },
-    { name: "Tranh đá Onyx Xuyên Sáng Gold", code: "OX-301", thumb: "assets/images/stone_terrazzo.jpg" },
-    { name: "Đá Quartz Trắng Vân Calacatta", code: "QZ-801", thumb: "assets/images/stone_carrara.jpg" }
+    { name: "Đá Marble Calacatta Gold Ý", code: "MB-101", thumb: "assets/images/da_tu_nhien/stone_calacatta_gold.jpg" },
+    { name: "Đá Calacatta Engineered Quartz", code: "QZ-801", thumb: "assets/images/da_nhan_tao/quartz_calacatta_lux.jpg" },
+    { name: "Tranh đá Onyx Xuyên Sáng Hoàng Gia", code: "OX-301", thumb: "assets/images/da_tu_nhien/stone_royal_onyx_backlit.jpg" },
+    { name: "Gạch Bông Florence Nghệ Thuật", code: "TL-101", thumb: "assets/images/gach_art/tile_florence_vintage.jpg" }
   ]
 };
 
@@ -791,7 +791,7 @@ function initConsultationMultiStep() {
     const result = filtered.map(p => ({
       name: p.name,
       code: p.stone_type ? p.stone_type.toUpperCase() + '-' + p.id.toString().substring(0, 3).toUpperCase() : 'STONE-01',
-      thumb: p.thumbnail_url || 'assets/images/stone_carrara.jpg'
+      thumb: p.thumbnail_url || 'assets/images/da_tu_nhien/stone_carrara.jpg'
     }));
 
     // Nếu lọc ra trống, fallback về danh sách tĩnh mặc định
@@ -1000,7 +1000,7 @@ const FALLBACK_PRODUCTS = [
     id: 1,
     name: "White Carrara",
     stone_type: "marble",
-    thumbnail_url: "assets/images/stone_carrara.jpg",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_carrara.jpg",
     price_range: "Dày: 20mm | Polished",
     is_translucent: false,
     description: "Nhập khẩu trực tiếp từ vùng Tuscany, Italy. Vân xám nhẹ trên nền tuyết trắng tinh tế."
@@ -1009,7 +1009,7 @@ const FALLBACK_PRODUCTS = [
     id: 2,
     name: "Nero Marquina Gold",
     stone_type: "granite",
-    thumbnail_url: "assets/images/stone_nero.jpg",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_nero.jpg",
     price_range: "Dày: 18mm | Polished",
     is_translucent: false,
     description: "Nền đen huyền bí điểm xuyết các đường chỉ trắng mảnh và vân vàng đồng vương giả."
@@ -1018,7 +1018,7 @@ const FALLBACK_PRODUCTS = [
     id: 3,
     name: "Palladiana Terrazzo",
     stone_type: "terrazzo",
-    thumbnail_url: "assets/images/stone_terrazzo.jpg",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_terrazzo.jpg",
     price_range: "Dày: 20mm | Honed",
     is_translucent: false,
     description: "Kết tụ các mảnh vụn đá cẩm thạch trắng, quartz thô tạo nên bề mặt đá độc đáo, sáng tạo."
@@ -1092,7 +1092,7 @@ function renderCatalog(products) {
 
     card.innerHTML = `
       <div class="product-img-wrapper">
-        <img src="${product.thumbnail_url || 'assets/images/stone_carrara.jpg'}" alt="${product.name}" class="product-img">
+        <img src="${product.thumbnail_url || 'assets/images/da_tu_nhien/stone_carrara.jpg'}" alt="${product.name}" class="product-img">
       </div>
       <div class="product-info">
         <span class="product-category">${categoryLabel}</span>
