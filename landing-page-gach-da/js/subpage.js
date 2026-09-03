@@ -58,43 +58,91 @@ const SUBPAGE_FALLBACKS = {
   'gach-art': [
     {
       id: 101,
-      name: "Gạch Bông Florence Classic",
+      name: "Gạch Bông Hoàng Gia Venice",
       stone_type: "bong",
-      thumbnail_url: "assets/images/gach_art/tile_florence_vintage.jpg",
-      price_range: "Hộp 12 viên | 200x200mm",
-      description: "Họa tiết hoa văn nghệ thuật phong cách Phục Hưng Ý cổ kính, men mờ chống trơn cao cấp cho phòng tắm, bếp và hiên nhà."
+      thumbnail_url: "assets/images/gach_art/tile_venice_royal.jpg",
+      price_range: "Khổ 200x200mm | Dày 16mm | Men Satin",
+      description: "Họa tiết đối xứng kinh điển Venice kết hợp xanh cobalt hoàng gia và vàng gold đất nung, tinh hoa gạch bông châu Âu thế kỷ 18."
     },
     {
       id: 102,
-      name: "Gạch Men Rạn Emerald Handmade",
+      name: "Gạch Men Rạn Sapphire Biển Sâu",
       stone_type: "men-ran",
-      thumbnail_url: "assets/images/gach_art/tile_emerald_glaze.jpg",
-      price_range: "Khổ 75x300mm | Dày 10mm",
-      description: "Màu xanh ngọc lục bảo sâu thẳm với bề mặt men rạn gợn sóng bán thủ công độc đáo, phản chiếu ánh sáng dịu nhẹ quý phái."
+      thumbnail_url: "assets/images/gach_art/tile_sapphire_crackle.jpg",
+      price_range: "Khổ 75x300mm | Dày 10mm | Men Bóng Rạn",
+      description: "Sắc xanh sapphire đại dương huyền bí với mạng lưới vi rạn thủy tinh tự nhiên bóng loáng, bắt sáng gợn sóng tuyệt mỹ."
     },
     {
       id: 103,
-      name: "Gạch Zellige Ánh Ngọc Champagne",
+      name: "Gạch Zellige Xanh Rêu Olive Handmade",
       stone_type: "zellige",
-      thumbnail_url: "assets/images/gach_art/tile_zellige_pearl.jpg",
-      price_range: "Khổ 100x100mm | Dày 12mm",
-      description: "Gốm Zellige thủ công truyền thống với độ bóng xà cừ óng ánh bắt sáng tự nhiên, kiến tạo không gian spa thư giãn đẳng cấp."
+      thumbnail_url: "assets/images/gach_art/tile_zellige_olive.jpg",
+      price_range: "Khổ 100x100mm | Dày 12mm | Terracotta",
+      description: "Gốm Morocco nung tay truyền thống với dải màu xanh olive đa tầng và ánh xà cừ ngọc bích óng ánh khi có ánh đèn chiếu rọi."
     },
     {
       id: 104,
+      name: "Gạch Terrazzo Rose & Amber Marble",
+      stone_type: "terrazzo",
+      thumbnail_url: "assets/images/gach_art/tile_terrazzo_rose_amber.jpg",
+      price_range: "Khổ 600x600mm | Dày 18mm | Polished",
+      description: "Hạt cẩm thạch hồng Rose Ý và đá thạch anh hổ phách cỡ lớn đúc nguyên khối trên nền xi măng kem ấm phong cách Venetian."
+    },
+    {
+      id: 105,
+      name: "Gạch Vảy Cá Men Xà Cừ Ngọc Trai",
+      stone_type: "men-ran",
+      thumbnail_url: "assets/images/gach_art/tile_pearl_fishscale.jpg",
+      price_range: "Vỉ mosaic 300x300mm | Dày 8mm",
+      description: "Họa tiết nan quạt vảy cá gợn sóng men bóng xà cừ óng ả Oyster Pearl, tạo điểm nhấn nghệ thuật hút mắt cho mảng tường phòng tắm và bếp."
+    },
+    {
+      id: 106,
+      name: "Gạch Mosaic Lục Giác Marble Brass Inlay",
+      stone_type: "zellige",
+      thumbnail_url: "assets/images/gach_art/tile_hexagon_brass_mosaic.jpg",
+      price_range: "Khổ vỉ 300x300mm | Dày 10mm | Honed",
+      description: "Đá cẩm thạch trắng Carrara cắt lục giác viền chỉ đồng thau chải xước sang trọng, kiến tạo vẻ đẹp hiện đại thời thượng."
+    },
+    {
+      id: 107,
+      name: "Gạch Bông Cổ Điển Andalucia",
+      stone_type: "bong",
+      thumbnail_url: "assets/images/gach_art/tile_andalucia_vintage.jpg",
+      price_range: "Khổ 200x200mm | Dày 16mm | Men Chalky",
+      description: "Họa tiết hoa văn đất nung và xanh lá thảo mộc phong cách Tây Ban Nha mộc mạc hoài cổ, bề mặt êm chân chống trơn hoàn hảo."
+    },
+    {
+      id: 108,
+      name: "Gạch Bông Florence Classic",
+      stone_type: "bong",
+      thumbnail_url: "assets/images/gach_art/tile_florence_vintage.jpg",
+      price_range: "Khổ 200x200mm | Dày 16mm | Men Mờ",
+      description: "Họa tiết hoa văn nghệ thuật phong cách Phục Hưng Ý cổ kính, men mờ chống trơn cao cấp cho phòng tắm, bếp và hiên nhà."
+    },
+    {
+      id: 109,
+      name: "Gạch Men Rạn Emerald Handmade",
+      stone_type: "men-ran",
+      thumbnail_url: "assets/images/gach_art/tile_emerald_glaze.jpg",
+      price_range: "Khổ 75x300mm | Dày 10mm | Men Bóng Rạn",
+      description: "Màu xanh ngọc lục bảo sâu thẳm với bề mặt men rạn gợn sóng bán thủ công độc đáo, phản chiếu ánh sáng dịu nhẹ quý phái."
+    },
+    {
+      id: 110,
+      name: "Gạch Zellige Ánh Ngọc Champagne",
+      stone_type: "zellige",
+      thumbnail_url: "assets/images/gach_art/tile_zellige_pearl.jpg",
+      price_range: "Khổ 100x100mm | Dày 12mm | Handmade",
+      description: "Gốm Zellige thủ công truyền thống với độ bóng xà cừ óng ánh bắt sáng tự nhiên, kiến tạo không gian spa thư giãn đẳng cấp."
+    },
+    {
+      id: 111,
       name: "Gạch Palladiana Terrazzo Nghệ Thuật",
       stone_type: "terrazzo",
       thumbnail_url: "assets/images/gach_art/tile_terrazzo_art.jpg",
       price_range: "Khổ 600x600mm | Dày 15mm | Honed",
       description: "Sự kết hợp các mảnh đá cẩm thạch Calacatta và Nero Marquina cỡ lớn đúc trên nền xi măng xám ấm, phong cách Venetian kinh điển."
-    },
-    {
-      id: 105,
-      name: "Gạch Terrazzo Ý Hạt Nhuyễn Modern",
-      stone_type: "terrazzo",
-      thumbnail_url: "assets/images/da_tu_nhien/stone_terrazzo.jpg",
-      price_range: "Khổ 600x1200mm | Dày 12mm",
-      description: "Hạt đá cẩm thạch trắng nhỏ li ti phân bố đồng đều, chống trầy xước và tạo cảm giác liền mạch thanh lịch cho không gian hiện đại."
     }
   ],
   'da-tu-nhien': [
@@ -145,6 +193,30 @@ const SUBPAGE_FALLBACKS = {
       thumbnail_url: "assets/images/da_tu_nhien/stone_carrara.jpg",
       price_range: "Khổ lớn | Dày 20mm | Polished",
       description: "Dòng đá cẩm thạch huyền thoại từ mỏ đá Carrara nước Ý. Vân mây xám nhẹ nhàng, tao nhã trên nền tuyết trắng trường tồn."
+    },
+    {
+      id: 7,
+      name: "Nero Marquina Midnight Marble",
+      stone_type: "marble",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_nero.jpg",
+      price_range: "Khổ lớn nguyên tấm | Dày 20mm | Polished",
+      description: "Đá cẩm thạch đen bóng gương Tây Ban Nha với dải vân chỉ trắng đối xứng tinh xảo, tôn vinh phong cách nội thất tối giản quyền quý."
+    },
+    {
+      id: 8,
+      name: "Honey Amber Onyx Xuyên Sáng",
+      stone_type: "onyx",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_onyx.jpg",
+      price_range: "Xuyên sáng 100% | Dày 20mm | Polished",
+      description: "Sắc vàng mật ong hổ phách ấm áp với những đường lượn sóng tự nhiên bừng sáng lộng lẫy dưới ánh đèn xuyên sáng."
+    },
+    {
+      id: 9,
+      name: "Venetian Terrazzo Tự Nhiên",
+      stone_type: "granite",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_terrazzo.jpg",
+      price_range: "Khổ lớn 600x1200mm | Dày 20mm | Honed",
+      description: "Cốt đá cẩm thạch tự nhiên hạt lớn phối màu trung tính Ý, độ bền vĩnh cửu và khả năng chịu lực tối ưu cho sàn đại sảnh và cầu thang."
     }
   ],
   'da-nhan-tao': [
@@ -158,6 +230,30 @@ const SUBPAGE_FALLBACKS = {
     },
     {
       id: 202,
+      name: "Calacatta Monet Quartz Slab",
+      stone_type: "calacatta",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_calacatta_monet.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Polished",
+      description: "Nền sứ trắng tinh khiết với các dải vân mây xám khói đan xen chỉ vàng mật ong ấm áp, kiến tạo không gian bếp biệt thự xa hoa."
+    },
+    {
+      id: 203,
+      name: "Statuario Elegance Engineered Quartz",
+      stone_type: "calacatta",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_statuario_slab.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Bookmatch",
+      description: "Dải vân xám mây xéo mềm mại quý phái điểm xuyết chỉ vàng amber trên nền tuyết trắng tinh khiết, mô phỏng hoàn mỹ đá Statuario Ý."
+    },
+    {
+      id: 204,
+      name: "Marquina Gold Vein Quartz",
+      stone_type: "storm",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_marquina_gold_vein.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Polished Mirror",
+      description: "Bề mặt đen tuyền bóng gương huyền bí với mạng lưới vân vàng đồng hoàng gia và chỉ trắng sắc sảo, tạo điểm nhấn quyền lực."
+    },
+    {
+      id: 205,
       name: "Nero Storm Lightning Quartz",
       stone_type: "storm",
       thumbnail_url: "assets/images/da_nhan_tao/quartz_nero_storm.jpg",
@@ -165,7 +261,23 @@ const SUBPAGE_FALLBACKS = {
       description: "Bề mặt đá đen nhám satin huyền bí với mạng lưới vân sấm sét trắng tương phản mạnh mẽ, không bám vân tay và dễ vệ sinh."
     },
     {
-      id: 203,
+      id: 206,
+      name: "Sahara Noir Gold Quartz",
+      stone_type: "storm",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_sahara_noir.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Polished",
+      description: "Nền đen huyền bí sâu thẳm điểm các đường chỉ vàng đồng brass và tia chớp trắng sắc sảo cắt ngang, phong cách hiện đại quyền lực."
+    },
+    {
+      id: 205,
+      name: "Emerald Fusion Quartzite",
+      stone_type: "crystal",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_emerald_fusion.jpg",
+      price_range: "Khổ lớn 3000x1400mm | Dày 20mm | Polished",
+      description: "Sắc xanh ngọc lục bảo Amazonite kết hợp các tinh thể thạch anh trắng và vân khoáng chất vàng lấp lánh như bức tranh địa chất quý giá."
+    },
+    {
+      id: 206,
       name: "Pure White Crystal Quartz",
       stone_type: "crystal",
       thumbnail_url: "assets/images/da_nhan_tao/quartz_pure_crystal.jpg",
@@ -173,20 +285,20 @@ const SUBPAGE_FALLBACKS = {
       description: "Trắng tinh khiết không ố màu kết hợp các hạt tinh thể vi kim cương lấp lánh phản chiếu ánh đèn sang trọng đẳng cấp."
     },
     {
-      id: 204,
+      id: 207,
+      name: "Taj Mahal Satin Quartz",
+      stone_type: "travertine",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_taj_mahal.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Satin Honed",
+      description: "Gam màu kem ngà ivory ấm áp với những đường sóng vân thạch anh màu caramel uốn lượn êm dịu, kiến tạo không gian sống thư thái trang nhã."
+    },
+    {
+      id: 208,
       name: "Travertine Fusion Quartz",
       stone_type: "travertine",
       thumbnail_url: "assets/images/da_nhan_tao/quartz_travertine_slab.jpg",
       price_range: "Khổ lớn 3200x1600mm | Dày 18mm | Honed",
       description: "Vân thớ gỗ travertine thẳng tắp màu be ấm áp kết cấu thạch anh siêu bền, ứng dụng hoàn hảo cho các mảng tường ốp trang trí biệt thự."
-    },
-    {
-      id: 205,
-      name: "Patagonia Fusion Quartz",
-      stone_type: "calacatta",
-      thumbnail_url: "assets/images/da_tu_nhien/stone_patagonia.jpg",
-      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Polished",
-      description: "Mô phỏng chân thực vân đá thạch anh tự nhiên Patagonia với độ cứng 7/10 Mohs, chống thấm nước tuyệt đối 100%."
     }
   ]
 };
@@ -381,6 +493,13 @@ function initSubpageFilterTabs() {
     updateIndicator(activeBtn, true);
   }, 100);
 
+  if (document.fonts) {
+    document.fonts.ready.then(() => {
+      const currentActive = document.querySelector('.sub-filter-btn.active') || filterBtns[0];
+      updateIndicator(currentActive, true);
+    });
+  }
+
   window.addEventListener('resize', () => {
     const currentActive = document.querySelector('.sub-filter-btn.active') || filterBtns[0];
     updateIndicator(currentActive, true);
@@ -422,46 +541,220 @@ function initSubpageFilterTabs() {
   }
 }
 
-// 6. Lightbox Handler
+// 6. Luxury Zoomable Lightbox Handler
+let subpageZoomLevel = 1;
+let subpagePanX = 0;
+let subpagePanY = 0;
+let subpageIsDragging = false;
+let subpageDragStartX = 0;
+let subpageDragStartY = 0;
+
 function initSubpageLightbox() {
   const lightbox = document.getElementById('lightboxModal');
-  if (!lightbox) return;
+  const backdrop = document.getElementById('lightboxBackdrop');
+  const closeBtn = document.getElementById('lightboxCloseBtn');
+  const zoomInBtn = document.getElementById('lightboxZoomIn');
+  const zoomOutBtn = document.getElementById('lightboxZoomOut');
+  const resetBtn = document.getElementById('lightboxResetZoom');
+  const zoomLevelText = document.getElementById('lightboxZoomLevel');
+  const viewport = document.getElementById('lightboxViewport');
+  const imgLayer = document.getElementById('lightboxImgLayer');
+  const mainImg = document.getElementById('lightboxMainImg');
+  const hintBadge = document.getElementById('lightboxHintBadge');
 
-  const closeBtn = lightbox.querySelector('.lightbox-close');
-  if (closeBtn) {
-    closeBtn.addEventListener('click', () => {
-      lightbox.classList.remove('active');
-    });
-  }
+  if (!lightbox || !viewport || !imgLayer) return;
 
-  lightbox.addEventListener('click', (e) => {
-    if (e.target === lightbox) {
-      lightbox.classList.remove('active');
+  const applyTransform = (smooth = true) => {
+    if (smooth) {
+      imgLayer.classList.add('smooth-transition');
+    } else {
+      imgLayer.classList.remove('smooth-transition');
+    }
+
+    imgLayer.style.transform = `translate(${subpagePanX}px, ${subpagePanY}px) scale(${subpageZoomLevel})`;
+
+    if (zoomLevelText) {
+      zoomLevelText.textContent = `${Math.round(subpageZoomLevel * 100)}%`;
+    }
+
+    if (subpageZoomLevel > 1) {
+      viewport.classList.add('is-zoomed');
+    } else {
+      viewport.classList.remove('is-zoomed');
+      subpagePanX = 0;
+      subpagePanY = 0;
+      imgLayer.style.transform = `translate(0px, 0px) scale(${subpageZoomLevel})`;
+    }
+  };
+
+  const setZoom = (level, smooth = true) => {
+    subpageZoomLevel = Math.min(Math.max(level, 1), 4);
+    if (subpageZoomLevel === 1) {
+      subpagePanX = 0;
+      subpagePanY = 0;
+    }
+    applyTransform(smooth);
+  };
+
+  const zoomIn = () => setZoom(subpageZoomLevel + 0.5);
+  const zoomOut = () => setZoom(subpageZoomLevel - 0.5);
+  const resetZoom = () => setZoom(1);
+
+  // Button clicks
+  if (zoomInBtn) zoomInBtn.addEventListener('click', (e) => { e.stopPropagation(); zoomIn(); });
+  if (zoomOutBtn) zoomOutBtn.addEventListener('click', (e) => { e.stopPropagation(); zoomOut(); });
+  if (resetBtn) resetBtn.addEventListener('click', (e) => { e.stopPropagation(); resetZoom(); });
+
+  const closeLightbox = () => {
+    lightbox.classList.remove('active');
+    document.body.style.overflow = '';
+    setTimeout(() => {
+      resetZoom();
+    }, 300);
+  };
+
+  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
+  if (backdrop) backdrop.addEventListener('click', closeLightbox);
+
+  // ESC and Keyboard controls
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === '+' || e.key === '=') zoomIn();
+    else if (e.key === '-' || e.key === '_') zoomOut();
+    else if (e.key === '0') resetZoom();
+  });
+
+  // Mouse Wheel Zoom
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.25 : -0.25;
+    setZoom(subpageZoomLevel + delta, true);
+  }, { passive: false });
+
+  // Double click to toggle zoom
+  viewport.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    if (subpageZoomLevel > 1) {
+      resetZoom();
+    } else {
+      setZoom(2.2, true);
     }
   });
+
+  // Mouse Drag / Pan when zoomed
+  viewport.addEventListener('mousedown', (e) => {
+    if (subpageZoomLevel <= 1 || e.button !== 0) return;
+    subpageIsDragging = true;
+    viewport.classList.add('is-grabbing');
+    subpageDragStartX = e.clientX - subpagePanX;
+    subpageDragStartY = e.clientY - subpagePanY;
+    imgLayer.classList.remove('smooth-transition');
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!subpageIsDragging || !lightbox.classList.contains('active')) return;
+    e.preventDefault();
+    subpagePanX = e.clientX - subpageDragStartX;
+    subpagePanY = e.clientY - subpageDragStartY;
+
+    // Constrain pan boundaries
+    const maxPan = (subpageZoomLevel - 1) * 350;
+    subpagePanX = Math.max(-maxPan, Math.min(maxPan, subpagePanX));
+    subpagePanY = Math.max(-maxPan, Math.min(maxPan, subpagePanY));
+
+    applyTransform(false);
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (subpageIsDragging) {
+      subpageIsDragging = false;
+      viewport.classList.remove('is-grabbing');
+      applyTransform(true);
+    }
+  });
+
+  // Touch Drag on mobile
+  let lastTouchX = 0;
+  let lastTouchY = 0;
+  let initialPinchDist = 0;
+  let initialPinchZoom = 1;
+
+  viewport.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1 && subpageZoomLevel > 1) {
+      subpageIsDragging = true;
+      lastTouchX = e.touches[0].clientX - subpagePanX;
+      lastTouchY = e.touches[0].clientY - subpagePanY;
+      imgLayer.classList.remove('smooth-transition');
+    } else if (e.touches.length === 2) {
+      initialPinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      initialPinchZoom = subpageZoomLevel;
+    }
+  }, { passive: true });
+
+  viewport.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && subpageIsDragging && subpageZoomLevel > 1) {
+      subpagePanX = e.touches[0].clientX - lastTouchX;
+      subpagePanY = e.touches[0].clientY - lastTouchY;
+      applyTransform(false);
+    } else if (e.touches.length === 2 && initialPinchDist > 0) {
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scaleFactor = currentDist / initialPinchDist;
+      setZoom(initialPinchZoom * scaleFactor, false);
+    }
+  }, { passive: true });
+
+  viewport.addEventListener('touchend', () => {
+    subpageIsDragging = false;
+    initialPinchDist = 0;
+    applyTransform(true);
+  });
+
+  // Export open function for reuse
+  window.openSubpageLightbox = (imgSrc, imgTitle) => {
+    if (mainImg) {
+      mainImg.src = imgSrc;
+      mainImg.alt = imgTitle || '';
+    }
+    const titleElem = document.getElementById('lightboxTitle');
+    if (titleElem && imgTitle) {
+      titleElem.textContent = imgTitle;
+    }
+
+    resetZoom();
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
 }
 
 function rebindSubpageLightboxEvents() {
-  const lightbox = document.getElementById('lightboxModal');
-  const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
-  const lightboxTitle = lightbox ? lightbox.querySelector('.lightbox-title') : null;
-  const productImgs = document.querySelectorAll('#subpageProductsGrid .product-img');
+  const productCards = document.querySelectorAll('#subpageProductsGrid .product-card');
 
-  if (lightbox && lightboxImg && productImgs.length > 0) {
-    productImgs.forEach(img => {
-      img.addEventListener('click', () => {
-        const card = img.closest('.product-card');
-        const title = card ? card.querySelector('.product-title') : null;
+  productCards.forEach(card => {
+    const img = card.querySelector('.product-img');
+    const title = card.querySelector('.product-title');
+    const imgWrapper = card.querySelector('.product-img-wrapper');
+    const zoomAction = card.querySelector('.btn-zoom-action');
 
-        lightboxImg.src = img.src;
-        lightboxImg.alt = img.alt || '';
-        if (title && lightboxTitle) {
-          lightboxTitle.textContent = title.textContent;
-        }
-        lightbox.classList.add('active');
-      });
-    });
-  }
+    const triggerOpen = (e) => {
+      if (e) e.stopPropagation();
+      if (!img) return;
+      const titleText = title ? title.textContent.trim() : 'Mẫu Đá Atelier';
+      if (window.openSubpageLightbox) {
+        window.openSubpageLightbox(img.src, titleText);
+      }
+    };
+
+    if (imgWrapper) imgWrapper.addEventListener('click', triggerOpen);
+    if (zoomAction) zoomAction.addEventListener('click', triggerOpen);
+    if (img) img.addEventListener('click', triggerOpen);
+  });
 }
 
 // 7. Mobile Touch Swipe To Go Back Gesture

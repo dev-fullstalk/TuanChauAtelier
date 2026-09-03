@@ -138,16 +138,40 @@ function initHeaderScroll() {
   const header = document.querySelector('header.site-header');
   if (!header) return;
 
-  const handleScroll = () => {
-    if (window.scrollY > 50) {
-      header.classList.add('scrolled');
-    } else {
-      header.classList.remove('scrolled');
-    }
-  };
+  const isHomepage = !window.subpageType && (
+    document.querySelector('.hero-section') !== null ||
+    window.location.pathname.endsWith('index.html') ||
+    window.location.pathname.endsWith('/') ||
+    window.location.pathname === ''
+  );
 
-  window.addEventListener('scroll', handleScroll);
-  handleScroll(); // Trigger immediately to catch refreshed scroll offset
+  if (isHomepage) {
+    // On Homepage: Keep header hidden at top for full video intro, reveal when scrolling down
+    header.classList.add('header-home-hidden');
+
+    const handleScroll = () => {
+      if (window.scrollY > 90) {
+        header.classList.add('header-revealed', 'scrolled');
+      } else {
+        header.classList.remove('header-revealed', 'scrolled');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+  } else {
+    // On Subpages: Header stays visible, shrinks with glassmorphism on scroll
+    const handleScroll = () => {
+      if (window.scrollY > 50) {
+        header.classList.add('scrolled');
+      } else {
+        header.classList.remove('scrolled');
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+  }
 }
 
 // 5. Product Filter System
@@ -183,54 +207,194 @@ function initProductFilter() {
   });
 }
 
-// 6. Lightbox Preview Modal
+// 6. Luxury Zoomable Lightbox Preview Modal
+let mainZoomLevel = 1;
+let mainPanX = 0;
+let mainPanY = 0;
+let mainIsDragging = false;
+let mainDragStartX = 0;
+let mainDragStartY = 0;
+
 function initLightbox() {
   const lightbox = document.getElementById('lightboxModal');
-  const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
-  const lightboxTitle = lightbox ? lightbox.querySelector('.lightbox-title') : null;
-  const viewBtns = document.querySelectorAll('.btn-view-texture');
-  const closeBtn = lightbox ? lightbox.querySelector('.lightbox-close') : null;
+  const backdrop = document.getElementById('lightboxBackdrop');
+  const closeBtn = document.getElementById('lightboxCloseBtn');
+  const zoomInBtn = document.getElementById('lightboxZoomIn');
+  const zoomOutBtn = document.getElementById('lightboxZoomOut');
+  const resetBtn = document.getElementById('lightboxResetZoom');
+  const zoomLevelText = document.getElementById('lightboxZoomLevel');
+  const viewport = document.getElementById('lightboxViewport');
+  const imgLayer = document.getElementById('lightboxImgLayer');
+  const mainImg = document.getElementById('lightboxMainImg');
+  const hintBadge = document.getElementById('lightboxHintBadge');
 
-  if (!lightbox || !lightboxImg) return;
+  if (!lightbox || !viewport || !imgLayer) return;
 
-  viewBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      const card = btn.closest('.product-card');
-      const img = card.querySelector('.product-img');
-      const title = card.querySelector('.product-title');
+  const applyTransform = (smooth = true) => {
+    if (smooth) {
+      imgLayer.classList.add('smooth-transition');
+    } else {
+      imgLayer.classList.remove('smooth-transition');
+    }
 
-      if (img) {
-        lightboxImg.src = img.src;
-        lightboxImg.alt = img.alt || '';
-      }
-      if (title && lightboxTitle) {
-        lightboxTitle.textContent = title.textContent;
-      }
+    imgLayer.style.transform = `translate(${mainPanX}px, ${mainPanY}px) scale(${mainZoomLevel})`;
 
-      lightbox.classList.add('active');
-      document.body.style.overflow = 'hidden'; // Lock background scroll
-    });
-  });
+    if (zoomLevelText) {
+      zoomLevelText.textContent = `${Math.round(mainZoomLevel * 100)}%`;
+    }
+
+    if (mainZoomLevel > 1) {
+      viewport.classList.add('is-zoomed');
+    } else {
+      viewport.classList.remove('is-zoomed');
+      mainPanX = 0;
+      mainPanY = 0;
+      imgLayer.style.transform = `translate(0px, 0px) scale(${mainZoomLevel})`;
+    }
+  };
+
+  const setZoom = (level, smooth = true) => {
+    mainZoomLevel = Math.min(Math.max(level, 1), 4);
+    if (mainZoomLevel === 1) {
+      mainPanX = 0;
+      mainPanY = 0;
+    }
+    applyTransform(smooth);
+  };
+
+  const zoomIn = () => setZoom(mainZoomLevel + 0.5);
+  const zoomOut = () => setZoom(mainZoomLevel - 0.5);
+  const resetZoom = () => setZoom(1);
+
+  if (zoomInBtn) zoomInBtn.addEventListener('click', (e) => { e.stopPropagation(); zoomIn(); });
+  if (zoomOutBtn) zoomOutBtn.addEventListener('click', (e) => { e.stopPropagation(); zoomOut(); });
+  if (resetBtn) resetBtn.addEventListener('click', (e) => { e.stopPropagation(); resetZoom(); });
 
   const closeLightbox = () => {
     lightbox.classList.remove('active');
     document.body.style.overflow = '';
+    setTimeout(() => {
+      resetZoom();
+    }, 300);
   };
 
   if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
-  lightbox.addEventListener('click', (e) => {
-    // Chỉ đóng khi click ngoài vùng hiển thị ảnh (lightbox-img-wrapper) hoặc click nút đóng
-    if (!e.target.closest('.lightbox-img-wrapper') || e.target.closest('.lightbox-close')) {
-      closeLightbox();
+  if (backdrop) backdrop.addEventListener('click', closeLightbox);
+
+  // ESC and Keyboard controls
+  document.addEventListener('keydown', (e) => {
+    if (!lightbox.classList.contains('active')) return;
+    if (e.key === 'Escape') closeLightbox();
+    else if (e.key === '+' || e.key === '=') zoomIn();
+    else if (e.key === '-' || e.key === '_') zoomOut();
+    else if (e.key === '0') resetZoom();
+  });
+
+  // Mouse Wheel Zoom
+  viewport.addEventListener('wheel', (e) => {
+    e.preventDefault();
+    const delta = e.deltaY < 0 ? 0.25 : -0.25;
+    setZoom(mainZoomLevel + delta, true);
+  }, { passive: false });
+
+  // Double click to toggle zoom
+  viewport.addEventListener('dblclick', (e) => {
+    e.preventDefault();
+    if (mainZoomLevel > 1) {
+      resetZoom();
+    } else {
+      setZoom(2.2, true);
     }
   });
 
-  // ESC Key listener to dismiss
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && lightbox.classList.contains('active')) {
-      closeLightbox();
+  // Mouse Drag / Pan when zoomed
+  viewport.addEventListener('mousedown', (e) => {
+    if (mainZoomLevel <= 1 || e.button !== 0) return;
+    mainIsDragging = true;
+    viewport.classList.add('is-grabbing');
+    mainDragStartX = e.clientX - mainPanX;
+    mainDragStartY = e.clientY - mainPanY;
+    imgLayer.classList.remove('smooth-transition');
+  });
+
+  window.addEventListener('mousemove', (e) => {
+    if (!mainIsDragging || !lightbox.classList.contains('active')) return;
+    e.preventDefault();
+    mainPanX = e.clientX - mainDragStartX;
+    mainPanY = e.clientY - mainDragStartY;
+
+    const maxPan = (mainZoomLevel - 1) * 350;
+    mainPanX = Math.max(-maxPan, Math.min(maxPan, mainPanX));
+    mainPanY = Math.max(-maxPan, Math.min(maxPan, mainPanY));
+
+    applyTransform(false);
+  });
+
+  window.addEventListener('mouseup', () => {
+    if (mainIsDragging) {
+      mainIsDragging = false;
+      viewport.classList.remove('is-grabbing');
+      applyTransform(true);
     }
   });
+
+  // Touch on Mobile
+  let lastTouchX = 0;
+  let lastTouchY = 0;
+  let initialPinchDist = 0;
+  let initialPinchZoom = 1;
+
+  viewport.addEventListener('touchstart', (e) => {
+    if (e.touches.length === 1 && mainZoomLevel > 1) {
+      mainIsDragging = true;
+      lastTouchX = e.touches[0].clientX - mainPanX;
+      lastTouchY = e.touches[0].clientY - mainPanY;
+      imgLayer.classList.remove('smooth-transition');
+    } else if (e.touches.length === 2) {
+      initialPinchDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      initialPinchZoom = mainZoomLevel;
+    }
+  }, { passive: true });
+
+  viewport.addEventListener('touchmove', (e) => {
+    if (e.touches.length === 1 && mainIsDragging && mainZoomLevel > 1) {
+      mainPanX = e.touches[0].clientX - lastTouchX;
+      mainPanY = e.touches[0].clientY - lastTouchY;
+      applyTransform(false);
+    } else if (e.touches.length === 2 && initialPinchDist > 0) {
+      const currentDist = Math.hypot(
+        e.touches[0].clientX - e.touches[1].clientX,
+        e.touches[0].clientY - e.touches[1].clientY
+      );
+      const scaleFactor = currentDist / initialPinchDist;
+      setZoom(initialPinchZoom * scaleFactor, false);
+    }
+  }, { passive: true });
+
+  viewport.addEventListener('touchend', () => {
+    mainIsDragging = false;
+    initialPinchDist = 0;
+    applyTransform(true);
+  });
+
+  // Global helper for opening lightbox
+  window.openMainLightbox = (imgSrc, imgTitle) => {
+    if (mainImg) {
+      mainImg.src = imgSrc;
+      mainImg.alt = imgTitle || '';
+    }
+    const titleElem = document.getElementById('lightboxTitle');
+    if (titleElem && imgTitle) {
+      titleElem.textContent = imgTitle;
+    }
+
+    resetZoom();
+    lightbox.classList.add('active');
+    document.body.style.overflow = 'hidden';
+  };
 }
 
 // 7. Interactive Quote Request Modal
@@ -1092,7 +1256,7 @@ function renderCatalog(products) {
 
     card.innerHTML = `
       <div class="product-img-wrapper">
-        <img src="${product.thumbnail_url || 'assets/images/da_tu_nhien/stone_carrara.jpg'}" alt="${product.name}" class="product-img">
+        <img src="${product.thumbnail_url || 'assets/images/da_tu_nhien/stone_carrara.jpg'}" alt="${product.name}" class="product-img" loading="lazy">
       </div>
       <div class="product-info">
         <span class="product-category">${categoryLabel}</span>
@@ -1112,33 +1276,27 @@ function renderCatalog(products) {
   rebindDynamicCatalogEvents();
 }
 
-// Re-bind các sự kiện Lightbox và sự kiện click Báo Giá cho các thẻ HTML được render động
+// Re-bind các sự kiện Lightbox cho các thẻ HTML được render động
 function rebindDynamicCatalogEvents() {
-  // 1. Re-bind Lightbox
-  const lightbox = document.getElementById('lightboxModal');
-  const lightboxImg = lightbox ? lightbox.querySelector('.lightbox-img') : null;
-  const lightboxTitle = lightbox ? lightbox.querySelector('.lightbox-title') : null;
-  const productImgs = document.querySelectorAll('#catalogProductsGrid .product-img');
+  const productCards = document.querySelectorAll('#catalogProductsGrid .product-card');
 
-  if (lightbox && lightboxImg && productImgs.length > 0) {
-    productImgs.forEach(img => {
-      img.addEventListener('click', () => {
-        const card = img.closest('.product-card');
-        const title = card ? card.querySelector('.product-title') : null;
+  productCards.forEach(card => {
+    const img = card.querySelector('.product-img');
+    const title = card.querySelector('.product-title');
+    const imgWrapper = card.querySelector('.product-img-wrapper');
 
-        lightboxImg.src = img.src;
-        lightboxImg.alt = img.alt || '';
-        if (title && lightboxTitle) {
-          lightboxTitle.textContent = title.textContent;
-        }
+    const triggerOpen = (e) => {
+      if (e) e.stopPropagation();
+      if (!img) return;
+      const titleText = title ? title.textContent.trim() : 'Mẫu Đá Atelier';
+      if (window.openMainLightbox) {
+        window.openMainLightbox(img.src, titleText);
+      }
+    };
 
-        lightbox.classList.add('active');
-        document.body.style.overflow = 'hidden';
-      });
-    });
-  }
-
-  // 2. Re-bind Báo Giá (Bypass, card link points to Zalo)
+    if (imgWrapper) imgWrapper.addEventListener('click', triggerOpen);
+    if (img) img.addEventListener('click', triggerOpen);
+  });
 }
 
 // 14. Horizontal Expanding Accordion Gallery
