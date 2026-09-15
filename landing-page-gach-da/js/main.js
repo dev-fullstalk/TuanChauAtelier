@@ -712,27 +712,40 @@ const sendTelegramAlert = (data) => window.TelegramAPI.sendTelegramAlert(data);
 const STONE_DATABASE = {
   "Kitchen": [
     { name: "Đá Calacatta Gold Engineered Quartz", code: "QZ-801", thumb: "assets/images/da_nhan_tao/quartz_calacatta_lux.jpg" },
+    { name: "Đá Calacatta Borghini Gold Quartz", code: "QZ-804", thumb: "assets/images/da_nhan_tao/quartz_calacatta_borghini.jpg" },
+    { name: "Đá Azul Macaubas Wave Quartz", code: "QZ-805", thumb: "assets/images/da_nhan_tao/quartz_azul_macaubas.jpg" },
+    { name: "Đá Midnight Calacatta Black Quartz", code: "QZ-806", thumb: "assets/images/da_nhan_tao/quartz_calacatta_black.jpg" },
     { name: "Đá Nero Storm Lightning Quartz", code: "QZ-802", thumb: "assets/images/da_nhan_tao/quartz_nero_storm.jpg" },
     { name: "Đá Pure White Crystal Quartz", code: "QZ-803", thumb: "assets/images/da_nhan_tao/quartz_pure_crystal.jpg" }
   ],
   "Bathroom": [
     { name: "Đá Marble Trắng Carrara Ý", code: "MB-101", thumb: "assets/images/da_tu_nhien/stone_carrara.jpg" },
+    { name: "Đá Marble Calacatta Viola Bookmatch", code: "MB-104", thumb: "assets/images/da_tu_nhien/stone_calacatta_viola.jpg" },
+    { name: "Đá Marble Rosa Portogallo Hoàng Gia", code: "MB-105", thumb: "assets/images/da_tu_nhien/stone_rosa_portogallo.jpg" },
+    { name: "Đá Thạch Anh Porto Rose Luxury", code: "QZ-807", thumb: "assets/images/da_nhan_tao/quartz_porto_rose.jpg" },
     { name: "Gạch Men Rạn Emerald Handmade", code: "TL-102", thumb: "assets/images/gach_art/tile_emerald_glaze.jpg" },
     { name: "Gạch Zellige Ánh Ngọc Champagne", code: "TL-103", thumb: "assets/images/gach_art/tile_zellige_pearl.jpg" }
   ],
   "Living Room & Translucent Stone": [
+    { name: "Tranh đá Ngọc Bích Green Onyx Xuyên Sáng", code: "OX-302", thumb: "assets/images/da_tu_nhien/stone_green_onyx.jpg" },
     { name: "Tranh đá Onyx Xuyên Sáng Gold Iran", code: "OX-301", thumb: "assets/images/da_tu_nhien/stone_royal_onyx_backlit.jpg" },
-    { name: "Đá Marble Calacatta Gold Vương Giả", code: "MB-102", thumb: "assets/images/da_tu_nhien/stone_calacatta_gold.jpg" },
+    { name: "Đá Marble Statuario Venato Penthouse", code: "MB-106", thumb: "assets/images/da_tu_nhien/stone_statuario_venato.jpg" },
+    { name: "Đá Marble Panda White Thủy Mặc", code: "MB-107", thumb: "assets/images/da_tu_nhien/stone_panda_white.jpg" },
     { name: "Đá Thạch Anh Patagonia Brazil", code: "QZ-303", thumb: "assets/images/da_tu_nhien/stone_patagonia.jpg" }
   ],
   "Stairs & Exterior": [
+    { name: "Đá Hoa Cương Blue Bahia Hoàng Gia", code: "GR-206", thumb: "assets/images/da_tu_nhien/stone_blue_bahia.jpg" },
+    { name: "Đá Granite Black Fusion Magma", code: "GR-207", thumb: "assets/images/da_tu_nhien/stone_black_fusion.jpg" },
+    { name: "Đá Vôi Roman Travertino Navona La Mã", code: "MB-108", thumb: "assets/images/da_tu_nhien/stone_travertino_navona.jpg" },
     { name: "Đá Marble Đen Spanish Nero Marquina", code: "MB-201", thumb: "assets/images/da_tu_nhien/stone_nero_natural.jpg" },
     { name: "Đá Granite Verde Alpi Xanh Ngọc", code: "GR-205", thumb: "assets/images/da_tu_nhien/stone_verde_emerald.jpg" },
     { name: "Gạch Palladiana Terrazzo Ý", code: "TL-204", thumb: "assets/images/gach_art/tile_terrazzo_art.jpg" }
   ],
   "Full House": [
-    { name: "Đá Marble Calacatta Gold Ý", code: "MB-101", thumb: "assets/images/da_tu_nhien/stone_calacatta_gold.jpg" },
-    { name: "Đá Calacatta Engineered Quartz", code: "QZ-801", thumb: "assets/images/da_nhan_tao/quartz_calacatta_lux.jpg" },
+    { name: "Đá Lemurian Blue Labradorite Ánh Xà Cừ", code: "GR-208", thumb: "assets/images/da_tu_nhien/stone_labradorite_lemurian.jpg" },
+    { name: "Đá Thạch Anh Amazonite Turquoise Brazil", code: "QZ-304", thumb: "assets/images/da_tu_nhien/stone_amazonite_turquoise.jpg" },
+    { name: "Đá Marble Calacatta Viola Bookmatch", code: "MB-104", thumb: "assets/images/da_tu_nhien/stone_calacatta_viola.jpg" },
+    { name: "Đá Calacatta Borghini Gold Quartz", code: "QZ-804", thumb: "assets/images/da_nhan_tao/quartz_calacatta_borghini.jpg" },
     { name: "Tranh đá Onyx Xuyên Sáng Hoàng Gia", code: "OX-301", thumb: "assets/images/da_tu_nhien/stone_royal_onyx_backlit.jpg" },
     { name: "Gạch Bông Florence Nghệ Thuật", code: "TL-101", thumb: "assets/images/gach_art/tile_florence_vintage.jpg" }
   ]
@@ -1162,30 +1175,93 @@ function initConsultationMultiStep() {
 const FALLBACK_PRODUCTS = [
   {
     id: 1,
-    name: "White Carrara",
+    name: "Calacatta Gold Marble Ý",
     stone_type: "marble",
-    thumbnail_url: "assets/images/da_tu_nhien/stone_carrara.jpg",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_calacatta_gold.jpg",
     price_range: "Dày: 20mm | Polished",
     is_translucent: false,
-    description: "Nhập khẩu trực tiếp từ vùng Tuscany, Italy. Vân xám nhẹ trên nền tuyết trắng tinh tế."
+    description: "Đá cẩm thạch vương giả từ mỏ Carrara nước Ý với dải vân vàng đồng và xám khói sắc nét."
   },
   {
     id: 2,
-    name: "Nero Marquina Gold",
-    stone_type: "granite",
-    thumbnail_url: "assets/images/da_tu_nhien/stone_nero.jpg",
-    price_range: "Dày: 18mm | Polished",
+    name: "Calacatta Viola Marble Ý",
+    stone_type: "marble",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_calacatta_viola.jpg",
+    price_range: "Dày: 20mm | Bookmatch",
     is_translucent: false,
-    description: "Nền đen huyền bí điểm xuyết các đường chỉ trắng mảnh và vân vàng đồng vương giả."
+    description: "Tuyệt tác cẩm thạch Ý kinh điển với mạng vân breccia đỏ rượu vang Cabernet và tím khói ấn tượng."
   },
   {
     id: 3,
-    name: "Palladiana Terrazzo",
-    stone_type: "terrazzo",
-    thumbnail_url: "assets/images/da_tu_nhien/stone_terrazzo.jpg",
-    price_range: "Dày: 20mm | Honed",
+    name: "Blue Bahia Granite Hoàng Gia",
+    stone_type: "granite",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_blue_bahia.jpg",
+    price_range: "Dày: 20mm | Polished",
     is_translucent: false,
-    description: "Kết tụ các mảnh vụn đá cẩm thạch trắng, quartz thô tạo nên bề mặt đá độc đáo, sáng tạo."
+    description: "Đá hoa cương xanh hoàng gia Blue Bahia nhập khẩu Brazil, dải khoáng chất xanh lam quý hiếm."
+  },
+  {
+    id: 4,
+    name: "Green Onyx Ngọc Bích Xuyên Sáng",
+    stone_type: "onyx",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_green_onyx.jpg",
+    price_range: "Dày: 20mm | LED Backlit",
+    is_translucent: true,
+    description: "Tranh đá ngọc bích tự nhiên xanh ngọc lam thanh khiết phát sáng huyền ảo dưới hệ đèn LED."
+  },
+  {
+    id: 5,
+    name: "Panda White Marble Thủy Mặc",
+    stone_type: "marble",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_panda_white.jpg",
+    price_range: "Dày: 20mm | Bookmatch",
+    is_translucent: false,
+    description: "Bức họa thủy mặc phương Đông với dải vân đen mun cuộn trào sắc nét trên nền tuyết trắng."
+  },
+  {
+    id: 6,
+    name: "Calacatta Borghini Gold Quartz",
+    stone_type: "quartz",
+    thumbnail_url: "assets/images/da_nhan_tao/quartz_calacatta_borghini.jpg",
+    price_range: "Dày: 20mm | Polished",
+    is_translucent: false,
+    description: "Thạch anh nhân tạo cao cấp vân vàng hổ phách, hoàn hảo cho bàn đảo bếp thác nước xa hoa."
+  },
+  {
+    id: 7,
+    name: "Azul Macaubas Wave Quartz",
+    stone_type: "quartz",
+    thumbnail_url: "assets/images/da_nhan_tao/quartz_azul_macaubas.jpg",
+    price_range: "Dày: 20mm | Polished",
+    is_translucent: false,
+    description: "Thạch anh engineered tái hiện hoàn mỹ sắc xanh lam ngọc đại dương với vân sóng thẳng tắp."
+  },
+  {
+    id: 8,
+    name: "Midnight Calacatta Black Quartz",
+    stone_type: "quartz",
+    thumbnail_url: "assets/images/da_nhan_tao/quartz_calacatta_black.jpg",
+    price_range: "Dày: 20mm | Satin Honed",
+    is_translucent: false,
+    description: "Nền đen tuyền huyền bí với những vệt tia chớp trắng sắc lẹm và chỉ vàng đồng, bề mặt Satin Honed."
+  },
+  {
+    id: 9,
+    name: "Lemurian Blue Labradorite Ánh Xà Cừ",
+    stone_type: "granite",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_labradorite_lemurian.jpg",
+    price_range: "Dày: 20mm | Polished",
+    is_translucent: false,
+    description: "Đá hóa ngọc quý hiếm với các tinh thể khoáng chất xanh lông công phát quang óng ánh."
+  },
+  {
+    id: 10,
+    name: "Amazonite Turquoise Quartzite Brazil",
+    stone_type: "quartzite",
+    thumbnail_url: "assets/images/da_tu_nhien/stone_amazonite_turquoise.jpg",
+    price_range: "Dày: 20mm | Polished",
+    is_translucent: false,
+    description: "Thạch anh tự nhiên xanh ngọc lam Amazonite nhập khẩu Brazil với chiều sâu địa chất mê hoặc."
   }
 ];
 

@@ -217,6 +217,86 @@ const SUBPAGE_FALLBACKS = {
       thumbnail_url: "assets/images/da_tu_nhien/stone_terrazzo.jpg",
       price_range: "Khổ lớn 600x1200mm | Dày 20mm | Honed",
       description: "Cốt đá cẩm thạch tự nhiên hạt lớn phối màu trung tính Ý, độ bền vĩnh cửu và khả năng chịu lực tối ưu cho sàn đại sảnh và cầu thang."
+    },
+    {
+      id: 10,
+      name: "Blue Bahia Granite Hoàng Gia",
+      stone_type: "granite",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_blue_bahia.jpg",
+      price_range: "Khổ lớn nguyên tấm | Dày 20mm | Polished",
+      description: "Đá hoa cương xanh hoàng gia Blue Bahia nhập khẩu Brazil, dải khoáng chất xanh lam quý hiếm xen lẫn vân vàng đồng quý tộc."
+    },
+    {
+      id: 11,
+      name: "Panda White Marble Thủy Mặc",
+      stone_type: "marble",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_panda_white.jpg",
+      price_range: "Khổ lớn nguyên tấm | Dày 20mm | Bookmatch",
+      description: "Bức họa thủy mặc phương Đông với dải vân đen mun cuộn trào sắc nét trên nền tuyết trắng tinh khiết, điểm nhấn vách đại sảnh vương giả."
+    },
+    {
+      id: 12,
+      name: "Lemurian Blue Labradorite Ánh Xà Cừ",
+      stone_type: "granite",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_labradorite_lemurian.jpg",
+      price_range: "Khổ lớn nguyên tấm | Dày 20mm | Polished",
+      description: "Đá hóa ngọc quý hiếm với các tinh thể khoáng chất xanh lông công phát quang óng ánh dưới ánh sáng, tuyệt tác kiến trúc độc bản."
+    },
+    {
+      id: 13,
+      name: "Calacatta Viola Marble Ý",
+      stone_type: "marble",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_calacatta_viola.jpg",
+      price_range: "Khổ lớn Bookmatch | Dày 20mm | Polished",
+      description: "Tuyệt tác cẩm thạch Ý kinh điển với mạng vân breccia đỏ rượu vang Cabernet và tím khói ấn tượng trên nền kem trắng trang nhã."
+    },
+    {
+      id: 14,
+      name: "Green Onyx Ngọc Bích Xuyên Sáng",
+      stone_type: "onyx",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_green_onyx.jpg",
+      price_range: "Xuyên sáng 100% | Dày 20mm | LED Backlit",
+      description: "Tranh đá ngọc bích tự nhiên xanh ngọc lam thanh khiết đan xen dải vân hổ phách ấm cúng, phát sáng huyền ảo dưới hệ đèn LED."
+    },
+    {
+      id: 15,
+      name: "Roman Travertino Navona La Mã",
+      stone_type: "marble",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_travertino_navona.jpg",
+      price_range: "Khổ lớn 600x1200mm | Dày 20mm | Vein-cut",
+      description: "Đá vôi La Mã trầm tích tự nhiên với dải vân thớ gỗ màu kem be ấm áp, kiến tạo không gian sống phong cách Địa Trung Hải quý phái."
+    },
+    {
+      id: 16,
+      name: "Amazonite Turquoise Quartzite Brazil",
+      stone_type: "quartzite",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_amazonite_turquoise.jpg",
+      price_range: "Khổ lớn nguyên tấm | Dày 20mm | Polished",
+      description: "Thạch anh tự nhiên xanh ngọc lam Amazonite nhập khẩu Brazil, dải màu ngọc bích phối tinh thể thạch anh trắng tạo nên chiều sâu mê hoặc."
+    },
+    {
+      id: 17,
+      name: "Statuario Venato Penthouse Marble",
+      stone_type: "marble",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_statuario_venato.jpg",
+      price_range: "Khổ lớn nguyên tấm | Dày 20mm | Polished",
+      description: "Dòng đá cẩm thạch Ý thượng hạng với mạng lưới vân xám đậm sắc sảo nổi bật trên nền tuyết trắng, tôn vinh đẳng cấp không gian Penthouse."
+    },
+    {
+      id: 18,
+      name: "Black Fusion Granite Magma",
+      stone_type: "granite",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_black_fusion.jpg",
+      price_range: "Khổ lớn nguyên tấm | Dày 20mm | Polished",
+      description: "Dòng dung nham vàng đồng rực lửa và chỉ bạc cuộn sóng dũng mãnh trên nền đá đen vũ trụ, biểu tượng của năng lượng và uy quyền."
+    },
+    {
+      id: 19,
+      name: "Rosa Portogallo Marble Hoàng Gia",
+      stone_type: "marble",
+      thumbnail_url: "assets/images/da_tu_nhien/stone_rosa_portogallo.jpg",
+      price_range: "Khổ lớn nguyên tấm | Dày 20mm | Polished",
+      description: "Sắc hồng phấn pastel và vân mây kem dịu dàng phong cách cung điện châu Âu, lý tưởng cho không gian phòng tắm master và phòng ngủ sang trọng."
     }
   ],
   'da-nhan-tao': [
@@ -269,7 +349,7 @@ const SUBPAGE_FALLBACKS = {
       description: "Nền đen huyền bí sâu thẳm điểm các đường chỉ vàng đồng brass và tia chớp trắng sắc sảo cắt ngang, phong cách hiện đại quyền lực."
     },
     {
-      id: 205,
+      id: 207,
       name: "Emerald Fusion Quartzite",
       stone_type: "crystal",
       thumbnail_url: "assets/images/da_nhan_tao/quartz_emerald_fusion.jpg",
@@ -277,7 +357,7 @@ const SUBPAGE_FALLBACKS = {
       description: "Sắc xanh ngọc lục bảo Amazonite kết hợp các tinh thể thạch anh trắng và vân khoáng chất vàng lấp lánh như bức tranh địa chất quý giá."
     },
     {
-      id: 206,
+      id: 208,
       name: "Pure White Crystal Quartz",
       stone_type: "crystal",
       thumbnail_url: "assets/images/da_nhan_tao/quartz_pure_crystal.jpg",
@@ -285,7 +365,7 @@ const SUBPAGE_FALLBACKS = {
       description: "Trắng tinh khiết không ố màu kết hợp các hạt tinh thể vi kim cương lấp lánh phản chiếu ánh đèn sang trọng đẳng cấp."
     },
     {
-      id: 207,
+      id: 209,
       name: "Taj Mahal Satin Quartz",
       stone_type: "travertine",
       thumbnail_url: "assets/images/da_nhan_tao/quartz_taj_mahal.jpg",
@@ -293,12 +373,52 @@ const SUBPAGE_FALLBACKS = {
       description: "Gam màu kem ngà ivory ấm áp với những đường sóng vân thạch anh màu caramel uốn lượn êm dịu, kiến tạo không gian sống thư thái trang nhã."
     },
     {
-      id: 208,
+      id: 210,
       name: "Travertine Fusion Quartz",
       stone_type: "travertine",
       thumbnail_url: "assets/images/da_nhan_tao/quartz_travertine_slab.jpg",
       price_range: "Khổ lớn 3200x1600mm | Dày 18mm | Honed",
       description: "Vân thớ gỗ travertine thẳng tắp màu be ấm áp kết cấu thạch anh siêu bền, ứng dụng hoàn hảo cho các mảng tường ốp trang trí biệt thự."
+    },
+    {
+      id: 211,
+      name: "Calacatta Borghini Gold Quartz",
+      stone_type: "calacatta",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_calacatta_borghini.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Polished",
+      description: "Thạch anh nhân tạo cao cấp vân vàng hổ phách và xám khói bồng bềnh, hoàn hảo cho bàn đảo bếp thác nước (Waterfall Island) xa hoa."
+    },
+    {
+      id: 212,
+      name: "Porto Rose Quartz Luxury",
+      stone_type: "crystal",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_porto_rose.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Polished",
+      description: "Mặt đá thạch anh gam màu kem ấm với dải vân hồng phấn và ánh đồng rose gold dịu nhẹ, chống trầy xước chống ố bẩn tối đa."
+    },
+    {
+      id: 213,
+      name: "Azul Macaubas Wave Quartz",
+      stone_type: "crystal",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_azul_macaubas.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Polished",
+      description: "Thạch anh engineered tái hiện hoàn mỹ sắc xanh lam ngọc đại dương với vân sóng thẳng tắp bắt mắt cho mặt bếp và quầy bar."
+    },
+    {
+      id: 214,
+      name: "Midnight Calacatta Black Quartz",
+      stone_type: "storm",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_calacatta_black.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Satin Honed",
+      description: "Nền đen tuyền huyền bí với những vệt tia chớp trắng sắc lẹm và chỉ vàng đồng, bề mặt Satin Honed mịn màng chống bám vân tay."
+    },
+    {
+      id: 215,
+      name: "Statuario Elegance Quartz Slab",
+      stone_type: "calacatta",
+      thumbnail_url: "assets/images/da_nhan_tao/quartz_statuario_elegance.jpg",
+      price_range: "Khổ lớn 3200x1600mm | Dày 20mm | Polished",
+      description: "Nền đá trắng tinh khiết phối dải vân xám mây tao nhã mô phỏng đá cẩm thạch Statuario Ý lừng danh, chịu lực và chịu nhiệt ưu việt."
     }
   ]
 };
